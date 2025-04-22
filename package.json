@@ -1,0 +1,25 @@
+{
+  "name": "project-management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/graphlib": "^2.1.12",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "csv-parser": "^3.2.0",
+    "graphlib": "^2.1.8",
+    "rxjs": "^7.8.2"
+  }
+}
