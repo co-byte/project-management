@@ -2,10 +2,15 @@ import { ingestCSV } from "./csv_ingestion_tib";
 import { Graph, Edge } from "graphlib";
 import { lastValueFrom } from "rxjs";
 
-// PERT formula: (O + 4M + P) / 6
 function calculateExpectedDuration(o: number, m: number, p: number): number {
+  // Guard against NaN and undefined durations
+  if (isNaN(o) || isNaN(m) || isNaN(p)) {
+    console.warn(`Invalid durations: O=${o}, M=${m}, P=${p}`);
+    return 0; // Return a default valid duration if inputs are incorrect
+  }
   return (o + 4 * m + p) / 6;
 }
+
 
 // Build graph from activities
 function buildGraph(activities: any[]): Graph {
@@ -76,38 +81,72 @@ function calculateCriticalPath(graph: Graph): { path: string[], duration: number
 
   const topOrder = topologicalSort(graph);
 
-  // Forward pass
+  console.log("Topological Order:", topOrder);
+
+  // Forward pass with proper initialization of earliest times
   for (const node of topOrder) {
-    const inEdges = graph.inEdges(node);
-    const maxPred = inEdges?.map(e => earliest[e.v] + graph.node(e.v).expected_duration) || [0];
-    earliest[node] = Math.max(...maxPred);
+    // Initialize earliest time for nodes with no dependencies (root tasks)
+    if (graph.inEdges(node)?.length === 0) {
+      earliest[node] = 0;
+    } else {
+      // Calculate earliest times based on predecessor finish times
+      const inEdges = graph.inEdges(node);
+      const preds = inEdges?.map(e => {
+        const predEarliest = earliest[e.v] || 0;  // Ensure predEarliest is not undefined
+        const predDuration = graph.node(e.v)?.expected_duration || 0; // Ensure predDuration is not undefined
+        const predFinish = predEarliest + predDuration;  // Finish time of the predecessor
+        console.log(`  -> ${e.v} (earliest: ${predEarliest}, duration: ${predDuration}, finish: ${predFinish})`);
+        return predFinish;
+      }) || [0];
+  
+      // Update earliest start time based on the maximum of predecessor finish times
+      earliest[node] = Math.max(...preds);
+    }
+  
+    // Log the calculated earliest start time for the current node
+    console.log(`Earliest start for ${node}: ${earliest[node]}`);
   }
 
-  const projectDuration = Math.max(...topOrder.map(n => earliest[n] + graph.node(n).expected_duration));
+  // Debug: Show all earliest values
+  console.log("Earliest Times:", earliest);
 
-  // Backward pass
+  // Check all nodes and durations before computing projectDuration
+  topOrder.forEach(n => {
+    const e = earliest[n];
+    const d = graph.node(n)?.expected_duration;
+    console.log(`Node ${n}: earliest = ${e}, duration = ${d}, sum = ${e + d}`);
+  });
+
+  const projectDuration = Math.max(
+    ...topOrder.map(n => earliest[n] + graph.node(n).expected_duration)
+  );
+
+  console.log(`FINAL PROJECT DURATION: ${projectDuration}`);
+
+  // Backward pass (optional: can add debug here too)
   for (let i = topOrder.length - 1; i >= 0; i--) {
     const node = topOrder[i];
     const outEdges = graph.outEdges(node);
   
     if (!outEdges || outEdges.length === 0) {
-        latest[node] = projectDuration - graph.node(node).expected_duration;
+      latest[node] = projectDuration - graph.node(node).expected_duration;
     } else {
-        const minSucc = outEdges.map(e => {
-            const successorLatest = latest[e.w];
-            return (successorLatest !== undefined
-            ? successorLatest
-            : projectDuration) - graph.node(e.w).expected_duration;
-        });
-        latest[node] = Math.min(...minSucc);
+      const minSucc = outEdges.map(e => {
+        const successorLatest = latest[e.w];
+        return (
+          (successorLatest !== undefined ? successorLatest : projectDuration)
+          - graph.node(e.w).expected_duration
+        );
+      });
+      latest[node] = Math.min(...minSucc);
     }
-
   }
-  
 
   const path = topOrder.filter(id => earliest[id] === latest[id]);
+
   return { path, duration: projectDuration };
 }
+
 
 // Main function
 (async () => {
@@ -131,6 +170,9 @@ function calculateCriticalPath(graph: Graph): { path: string[], duration: number
     }));
 
     const graph = buildGraph(activities);
+    console.log("Graph nodes:", graph.nodes());
+    console.log("Graph edges:", graph.edges());
+
     const { path, duration } = calculateCriticalPath(graph);
 
     console.log("Critical Path:");

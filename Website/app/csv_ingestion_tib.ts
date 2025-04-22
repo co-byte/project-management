@@ -5,8 +5,8 @@ import { from, lastValueFrom, of, throwError } from "rxjs";
 import { catchError, map, switchMap, toArray } from "rxjs/operators";
 
 interface Row {
-  duration: number;
-  weight: number;
+  optimistic_duration: number;
+  weight_of_delays: number;
   [key: string]: any;
 }
 
@@ -20,10 +20,13 @@ export function ingestCSV(filePath: string) {
       fs.createReadStream(absolutePath)
         .pipe(csv({ separator: ";" }))
         .on("data", (data) => {
-          const duration = parseFloat(data["optimistic_duration"]);  // Change 'duration' to 'optimistic_duration'
-          const weight = parseFloat(data["weight_of_delays"]);        // Change 'weight' to 'weight_of_delays'
+          const duration = parseFloat(data["optimistic_duration"]);
+          const weight = parseFloat(data["weight_of_delays"]);
           
-          if (isNaN(duration) || isNaN(weight)) return;
+          if (isNaN(duration) || isNaN(weight)) {
+            console.warn(`Skipping invalid row: ${JSON.stringify(data)}`);
+            return; // Skip this row if duration or weight is NaN
+          }
 
           results.push({ ...data, duration, weight });
         })
@@ -36,7 +39,15 @@ export function ingestCSV(filePath: string) {
         throw new Error("CSV is empty or missing valid rows.");
       }
 
+      // Calculate total weight
       const totalWeight = rows.reduce((sum, row) => sum + row.weight, 0);
+      
+      // Handle case where totalWeight is 0 (to avoid division by zero)
+      if (totalWeight === 0) {
+        throw new Error("Total weight is zero, cannot calculate expected durations.");
+      }
+
+      // Calculate expected durations based on the weighted average
       return rows.map((row) => ({
         ...row,
         expected_duration: (row.duration * row.weight) / totalWeight,
