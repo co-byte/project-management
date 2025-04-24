@@ -87,7 +87,7 @@ function topologicalSort(graph: Graph): string[] {
 function scheduleActivities(
   graph: Graph,
   totalPeople: number,
-  reveilingsness_threshold: number = 8
+  reveilingsness_threshold: number = 0
 ): { schedule: ScheduledActivity[]; totalCost: number } {
   const sorted = topologicalSort(graph);
   const schedule: ScheduledActivity[] = [];
@@ -100,7 +100,7 @@ function scheduleActivities(
   const activityMap: Record<string, ScheduledActivity> = {};
 
   for (const nodeId of sorted) {
-    const act = graph.node(nodeId) as Activity;
+    const activity = graph.node(nodeId) as Activity;
 
     const earliestStart = Math.max(
       0,
@@ -110,49 +110,64 @@ function scheduleActivities(
       })
     );
 
+    // Schedule the activity at the earliest possible time
     let bestStart = earliestStart;
-    let minPenalty = Infinity;
+    let minRevealingPenalty = 0; // Start with a penalty higher than the threshold
 
     // Try all start times from earliest possible to some reasonable future limit
-    for (let potentialStart = earliestStart; potentialStart < earliestStart + 50; potentialStart++) {
+    let latestStartThreshold = earliestStart + 100; // Arbitrary limit for search
+    for (
+      let potentialStart = earliestStart;
+      potentialStart < latestStartThreshold;
+      potentialStart++
+    ) {
       let canSchedule = true;
-      let penalty = 0;
+      let revealingPenalty = 0;
 
-      for (let t = potentialStart; t < potentialStart + act.expected_duration; t++) {
-        const slot = timeSlots[t] || { peopleUsed: 0, cost: 0, revealingnessSum: 0 };
-        if (slot.peopleUsed + act.people_required > totalPeople) {
+      for (
+        let t = potentialStart;
+        t < potentialStart + activity.expected_duration;
+        t++
+      ) {
+        // Check if the time slot is available and within people capacity
+        const timeSlot = timeSlots[t] || {
+          peopleUsed: 0,
+          cost: 0,
+          revealingnessSum: 0,
+        };
+        if (timeSlot.peopleUsed + activity.people_required > totalPeople) {
           canSchedule = false;
           break;
         }
 
         // Add penalty if high cumulative revealingness
-        const projectedRevealingness = slot.reveilingnessSum + act.level_of_revealingness;
+        const projectedRevealingness =
+          timeSlot.reveilingnessSum + activity.level_of_revealingness;
         if (projectedRevealingness > reveilingsness_threshold) {
-          penalty += projectedRevealingness - reveilingsness_threshold;
+          revealingPenalty += projectedRevealingness - reveilingsness_threshold;
         }
       }
 
-      if (canSchedule && penalty < minPenalty) {
-        minPenalty = penalty;
+      if (canSchedule && revealingPenalty < minRevealingPenalty) {
+        minRevealingPenalty = revealingPenalty;
         bestStart = potentialStart;
-        if (penalty === 0) break; // best case
+        if (revealingPenalty === 0) break; // best case
       }
     }
 
     const start = bestStart;
-    const end = start + act.expected_duration;
-
+    const end = start + activity.expected_duration;
     // Allocate people, cost, and revealingness in time slots
     for (let t = start; t < end; t++) {
       if (!timeSlots[t]) {
         timeSlots[t] = { peopleUsed: 0, cost: 0, reveilingnessSum: 0 };
       }
-      timeSlots[t].peopleUsed += act.people_required;
-      timeSlots[t].cost += act.monetary_cost_per_day;
-      timeSlots[t].reveilingnessSum += act.level_of_revealingness;
+      timeSlots[t].peopleUsed += activity.people_required;
+      timeSlots[t].cost += activity.monetary_cost_per_day;
+      timeSlots[t].reveilingnessSum += activity.level_of_revealingness;
     }
 
-    const scheduled: ScheduledActivity = { ...act, start, end };
+    const scheduled: ScheduledActivity = { ...activity, start, end };
     schedule.push(scheduled);
     activityMap[nodeId] = scheduled;
   }
@@ -216,6 +231,13 @@ function scheduleActivities(
 
   console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
 
-  fs.writeFileSync(jsonOutputPath, JSON.stringify(schedule, null, 2));
-  console.log("Schedule has been saved to ${jsonOutputPath}");
+  // Save the total cost and schedule to a JSON file
+  let output = {
+    totalCost: totalCost,
+    schedule: schedule,
+  };
+
+  fs.writeFileSync(jsonOutputPath, JSON.stringify(output, null, 2));
+
+  console.log("Schedule has been saved to ", jsonOutputPath);
 })();

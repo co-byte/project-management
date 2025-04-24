@@ -195,6 +195,12 @@ function scheduleActivities(
 
   console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
 
-  fs.writeFileSync(jsonOutputPath, JSON.stringify(schedule, null, 2));
-  console.log("Schedule has been saved to ${jsonOutputPath}");
+  // Save the total cost and schedule to a JSON file
+  let output = {
+    totalCost: totalCost,
+    schedule: schedule,
+  };
+  fs.writeFileSync(jsonOutputPath, JSON.stringify(output, null, 2));
+
+  console.log("Schedule has been saved to", jsonOutputPath);
 })();

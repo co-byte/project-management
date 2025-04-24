@@ -14,6 +14,9 @@
       fetch(filePath)
         .then(response => response.json())
         .then(data => {
+          scheduleData = data.schedule;
+          totalCost = data.totalCost;
+
           const chartData = new google.visualization.DataTable();
           chartData.addColumn('string', 'Task ID');
           chartData.addColumn('string', 'Task Name');
@@ -24,12 +27,13 @@
           chartData.addColumn('number', 'Percent Complete');
           chartData.addColumn('string', 'Dependencies');
 
-          data.forEach(task => {
+          // Add rows to the DataTable
+          scheduleData.forEach(task => {
             // Convert schedule data to chart-friendly format
             chartData.addRow([
               task.id,                            // Task ID
-              task.activity,                      // Task Name
-              '',                                 // Resource (Optional)
+              task.activity,                       // Task Name
+              '*'.repeat(task.level_of_revealingness || 0),        // Resource (Optional)
               new Date(2024, 0, task.start),      // Start Date (dummy start date)
               new Date(2024, 0, task.end),        // End Date (dummy start date)
               task.end - task.start,              // Duration (in days)
@@ -41,17 +45,21 @@
           // Create the chart
           const chart = new google.visualization.Gantt(document.getElementById(chartId));
 
-          const newHeight = data.length * 42 + 100;
-          console.log(newHeight)
+          const newHeight = scheduleData.length * 42 + 100;
 
           // Draw the chart with the data
           chart.draw(chartData, {
             height: newHeight,
             width: '100%'
           });
+
+          // Display the total cost in the HTML
+          const costElement = document.getElementById('total_cost_' + chartId);
+          costElement.textContent = `Total Cost: $${totalCost.toFixed(2)}`;
         })
         .catch(error => console.error('Error loading the schedule data:', error));
     }
+
     google.charts.setOnLoadCallback(() => {
       drawChartFromJson('./data/schedule_pert.json', 'gantt_chart_pert');
       drawChartFromJson('./data/schedule_kart.json', 'gantt_chart_kart');
@@ -70,8 +78,15 @@
 
     .gantt_chart {
       width: 100%;
-      margin: 20px auto;
+      margin-top: 5%;
+      margin-bottom: 0;
       padding: 0;
+    }
+
+    .totalCost {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 10%;
     }
   </style>
 </head>
@@ -79,9 +94,11 @@
 <body>
   <h1>PERT Gantt Chart</h1>
   <div id="gantt_chart_pert" class="gantt_chart"></div>
+  <div id="total_cost_gantt_chart_pert" class="totalCost"></div>
 
   <h1>KART Gantt Chart</h1>
   <div id="gantt_chart_kart" class="gantt_chart"></div>
+  <div id="total_cost_gantt_chart_kart" class="totalCost"></div>
 </body>
 
 </html>
