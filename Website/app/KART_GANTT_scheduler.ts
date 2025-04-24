@@ -55,7 +55,7 @@ function topologicalSort(graph: Graph): string[] {
   const sorted: string[] = [];
 
   graph.nodes().forEach((node: string | number) => (inDegree[node] = 0));
-  graph.edges().forEach((edge: { w: string | number; }) => {
+  graph.edges().forEach((edge: { w: string | number }) => {
     inDegree[edge.w] += 1;
   });
 
@@ -86,12 +86,17 @@ function topologicalSort(graph: Graph): string[] {
 // === Resource-Constrained Scheduling with Cost Tracking ===
 function scheduleActivities(
   graph: Graph,
-  totalPeople: number
+  totalPeople: number,
+  reveilingsness_threshold: number = 8
 ): { schedule: ScheduledActivity[]; totalCost: number } {
   const sorted = topologicalSort(graph);
   const schedule: ScheduledActivity[] = [];
 
-  const timeSlots: { peopleUsed: number; cost: number }[] = [];
+  const timeSlots: {
+    peopleUsed: number;
+    cost: number;
+    reveilingnessSum: number;
+  }[] = [];
   const activityMap: Record<string, ScheduledActivity> = {};
 
   for (const nodeId of sorted) {
@@ -99,36 +104,52 @@ function scheduleActivities(
 
     const earliestStart = Math.max(
       0,
-      ...(graph.inEdges(nodeId) || []).map((e: { v: string | number; }) => {
+      ...(graph.inEdges(nodeId) || []).map((e: { v: string | number }) => {
         const pred = activityMap[e.v];
         return pred.end;
       })
     );
 
-    let start = earliestStart;
+    let bestStart = earliestStart;
+    let minPenalty = Infinity;
 
-    // Find time slot with enough people
-    while (true) {
+    // Try all start times from earliest possible to some reasonable future limit
+    for (let potentialStart = earliestStart; potentialStart < earliestStart + 50; potentialStart++) {
       let canSchedule = true;
-      for (let t = start; t < start + act.expected_duration; t++) {
-        const slot = timeSlots[t] || { peopleUsed: 0, cost: 0 };
+      let penalty = 0;
+
+      for (let t = potentialStart; t < potentialStart + act.expected_duration; t++) {
+        const slot = timeSlots[t] || { peopleUsed: 0, cost: 0, revealingnessSum: 0 };
         if (slot.peopleUsed + act.people_required > totalPeople) {
           canSchedule = false;
           break;
         }
+
+        // Add penalty if high cumulative revealingness
+        const projectedRevealingness = slot.reveilingnessSum + act.level_of_revealingness;
+        if (projectedRevealingness > reveilingsness_threshold) {
+          penalty += projectedRevealingness - reveilingsness_threshold;
+        }
       }
 
-      if (canSchedule) break;
-      start += 1; // delay start
+      if (canSchedule && penalty < minPenalty) {
+        minPenalty = penalty;
+        bestStart = potentialStart;
+        if (penalty === 0) break; // best case
+      }
     }
 
+    const start = bestStart;
     const end = start + act.expected_duration;
 
-    // Allocate people and cost in time slots
+    // Allocate people, cost, and revealingness in time slots
     for (let t = start; t < end; t++) {
-      if (!timeSlots[t]) timeSlots[t] = { peopleUsed: 0, cost: 0 };
+      if (!timeSlots[t]) {
+        timeSlots[t] = { peopleUsed: 0, cost: 0, reveilingnessSum: 0 };
+      }
       timeSlots[t].peopleUsed += act.people_required;
       timeSlots[t].cost += act.monetary_cost_per_day;
+      timeSlots[t].reveilingnessSum += act.level_of_revealingness;
     }
 
     const scheduled: ScheduledActivity = { ...act, start, end };
@@ -167,11 +188,11 @@ function scheduleActivities(
     ),
     people_required: parseInt(row.people_required),
     monetary_cost_per_day: parseFloat(row.monetary_cost_per_day),
+    level_of_revealingness: parseFloat(row.level_of_revealingness),
     chance_of_delays: parseFloat(row.chance_of_delays),
     weight_of_delays: parseFloat(row.weight_of_delays),
     chance_of_losing_people: parseFloat(row.chance_of_losing_people),
     weight_of_losing_people: parseFloat(row.weight_of_losing_people),
-    level_of_revealingness: parseFloat(row.level_of_revealingness),
     dependencies: dependencies[row.wbs_code] || [],
   }));
 
