@@ -1,4 +1,4 @@
-import { ingestCSV } from "./csv_ingestion_tib";
+import { ingestCSV } from "./csv_ingestion";
 import { Graph, Edge } from "graphlib";
 import { lastValueFrom } from "rxjs";
 
