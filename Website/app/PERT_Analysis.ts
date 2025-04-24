@@ -2,15 +2,20 @@ import { ingestCSV } from "./csv_ingestion_tib";
 import { Graph, Edge } from "graphlib";
 import { lastValueFrom } from "rxjs";
 
-function calculateExpectedDuration(o: number, m: number, p: number): number {
+function calculateExpectedDuration(
+  optimistic: number,
+  realistic: number,
+  pessimistic: number
+): number {
   // Guard against NaN and undefined durations
-  if (isNaN(o) || isNaN(m) || isNaN(p)) {
-    console.warn(`Invalid durations: O=${o}, M=${m}, P=${p}`);
+  if (isNaN(optimistic) || isNaN(realistic) || isNaN(pessimistic)) {
+    console.warn(
+      `Invalid durations: O=${optimistic}, M=${realistic}, P=${pessimistic}`
+    );
     return 0; // Return a default valid duration if inputs are incorrect
   }
-  return (o + 4 * m + p) / 6;
+  return (optimistic + 4 * realistic + pessimistic) / 6;
 }
-
 
 // Build graph from activities
 function buildGraph(activities: any[]): Graph {
@@ -27,10 +32,10 @@ function buildGraph(activities: any[]): Graph {
     });
 
     act.dependencies.forEach((dep: string) => {
-        const cleanDep = dep?.trim();
-        if (cleanDep && cleanDep !== "/") {
-            g.setEdge(cleanDep, act.id);
-        }
+      const cleanDep = dep?.trim();
+      if (cleanDep && cleanDep !== "/") {
+        g.setEdge(cleanDep, act.id);
+      }
     });
   });
 
@@ -43,13 +48,13 @@ function topologicalSort(graph: Graph): string[] {
   const queue: string[] = [];
   const sorted: string[] = [];
 
-  graph.nodes().forEach(node => (inDegree[node] = 0));
+  graph.nodes().forEach((node) => (inDegree[node] = 0));
 
-  graph.edges().forEach(edge => {
+  graph.edges().forEach((edge) => {
     inDegree[edge.w] += 1;
   });
 
-  graph.nodes().forEach(node => {
+  graph.nodes().forEach((node) => {
     if (inDegree[node] === 0) {
       queue.push(node);
     }
@@ -75,7 +80,10 @@ function topologicalSort(graph: Graph): string[] {
 }
 
 // Calculate critical path
-function calculateCriticalPath(graph: Graph): { path: string[], duration: number } {
+function calculateCriticalPath(graph: Graph): {
+  path: string[];
+  duration: number;
+} {
   const earliest: Record<string, number> = {};
   const latest: Record<string, number> = {};
 
@@ -91,18 +99,20 @@ function calculateCriticalPath(graph: Graph): { path: string[], duration: number
     } else {
       // Calculate earliest times based on predecessor finish times
       const inEdges = graph.inEdges(node);
-      const preds = inEdges?.map(e => {
-        const predEarliest = earliest[e.v] || 0;  // Ensure predEarliest is not undefined
+      const preds = inEdges?.map((e) => {
+        const predEarliest = earliest[e.v] || 0; // Ensure predEarliest is not undefined
         const predDuration = graph.node(e.v)?.expected_duration || 0; // Ensure predDuration is not undefined
-        const predFinish = predEarliest + predDuration;  // Finish time of the predecessor
-        console.log(`  -> ${e.v} (earliest: ${predEarliest}, duration: ${predDuration}, finish: ${predFinish})`);
+        const predFinish = predEarliest + predDuration; // Finish time of the predecessor
+        console.log(
+          `  -> ${e.v} (earliest: ${predEarliest}, duration: ${predDuration}, finish: ${predFinish})`
+        );
         return predFinish;
       }) || [0];
-  
+
       // Update earliest start time based on the maximum of predecessor finish times
       earliest[node] = Math.max(...preds);
     }
-  
+
     // Log the calculated earliest start time for the current node
     console.log(`Earliest start for ${node}: ${earliest[node]}`);
   }
@@ -111,14 +121,14 @@ function calculateCriticalPath(graph: Graph): { path: string[], duration: number
   console.log("Earliest Times:", earliest);
 
   // Check all nodes and durations before computing projectDuration
-  topOrder.forEach(n => {
+  topOrder.forEach((n) => {
     const e = earliest[n];
     const d = graph.node(n)?.expected_duration;
     console.log(`Node ${n}: earliest = ${e}, duration = ${d}, sum = ${e + d}`);
   });
 
   const projectDuration = Math.max(
-    ...topOrder.map(n => earliest[n] + graph.node(n).expected_duration)
+    ...topOrder.map((n) => earliest[n] + graph.node(n).expected_duration)
   );
 
   console.log(`FINAL PROJECT DURATION: ${projectDuration}`);
@@ -127,26 +137,25 @@ function calculateCriticalPath(graph: Graph): { path: string[], duration: number
   for (let i = topOrder.length - 1; i >= 0; i--) {
     const node = topOrder[i];
     const outEdges = graph.outEdges(node);
-  
+
     if (!outEdges || outEdges.length === 0) {
       latest[node] = projectDuration - graph.node(node).expected_duration;
     } else {
-      const minSucc = outEdges.map(e => {
+      const minSucc = outEdges.map((e) => {
         const successorLatest = latest[e.w];
         return (
-          (successorLatest !== undefined ? successorLatest : projectDuration)
-          - graph.node(e.w).expected_duration
+          (successorLatest !== undefined ? successorLatest : projectDuration) -
+          graph.node(e.w).expected_duration
         );
       });
       latest[node] = Math.min(...minSucc);
     }
   }
 
-  const path = topOrder.filter(id => earliest[id] === latest[id]);
+  const path = topOrder.filter((id) => earliest[id] === latest[id]);
 
   return { path, duration: projectDuration };
 }
-
 
 // Main function
 (async () => {
@@ -176,12 +185,16 @@ function calculateCriticalPath(graph: Graph): { path: string[], duration: number
     const { path, duration } = calculateCriticalPath(graph);
 
     console.log("Critical Path:");
-    path.forEach(nodeId => {
+    path.forEach((nodeId) => {
       const act = graph.node(nodeId);
-      console.log(`- ${act.id}: ${act.activity} (${act.expected_duration.toFixed(2)}d)`);
+      console.log(
+        `- ${act.id}: ${act.activity} (${act.expected_duration.toFixed(2)}d)`
+      );
     });
 
-    console.log(`\nTotal Expected Project Duration: ${duration.toFixed(2)} days`);
+    console.log(
+      `\nTotal Expected Project Duration: ${duration.toFixed(2)} days`
+    );
   } catch (error) {
     console.error("Error:", error);
   }

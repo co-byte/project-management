@@ -1,7 +1,9 @@
 import { ingestCSV } from "./csv_ingestion_tib";
 import { Graph, Edge } from "graphlib";
 import { lastValueFrom } from "rxjs";
-import * as fs from 'fs'; // Node.js file system for saving the JSON output
+import * as fs from "fs"; // Node.js file system for saving the JSON output
+
+const jsonOutputPath = "./Website/data/schedule_pert.json"; // Path to save the JSON output
 
 interface Activity {
   id: string;
@@ -145,7 +147,10 @@ function scheduleActivities(
 
   const dependencies: Record<string, string[]> = {};
   rows.forEach((row: any) => {
-    const deps = row.predecessor?.trim() !== "/" ? row.predecessor.split(",").map((d: string) => d.trim()) : [];
+    const deps =
+      row.predecessor?.trim() !== "/"
+        ? row.predecessor.split(",").map((d: string) => d.trim())
+        : [];
     dependencies[row.wbs_code] = deps;
   });
 
@@ -178,14 +183,18 @@ function scheduleActivities(
   console.log(`\n📊 Gantt Schedule (Max ${totalPeople} People):`);
   schedule.forEach((act) => {
     console.log(
-      `- ${act.id.padEnd(10)} | ${act.activity.padEnd(30)} | Start: ${act.start.toFixed(0)} | End: ${act.end.toFixed(
+      `- ${act.id.padEnd(10)} | ${act.activity.padEnd(
+        30
+      )} | Start: ${act.start.toFixed(0)} | End: ${act.end.toFixed(
         0
-      )} | Cost: $${(act.monetary_cost_per_day * act.expected_duration).toFixed(2)}`
+      )} | Cost: $${(act.monetary_cost_per_day * act.expected_duration).toFixed(
+        2
+      )}`
     );
   });
 
   console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
 
-  fs.writeFileSync('./schedule.json', JSON.stringify(schedule, null, 2));
-  console.log('Schedule has been saved to schedule.json');
+  fs.writeFileSync(jsonOutputPath, JSON.stringify(schedule, null, 2));
+  console.log("Schedule has been saved to ${jsonOutputPath}");
 })();
