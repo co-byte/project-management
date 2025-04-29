@@ -72,12 +72,12 @@ export function buildGraph(activities: Activity[]): Graph {
   const g = new Graph();
 
   activities.forEach((act) => {
-    console.debug("buildGraph - Adding node:", act.id, act.activity);
+    // console.debug("buildGraph - Adding node:", act.id, act.activity);
 
     g.setNode(act.id, act);
     act.dependencies.forEach((dep: string) => {
       if (dep && dep.trim() && dep !== "/") {
-        console.debug("buildGraph - Adding edge:", dep.trim(), act.id);
+        // console.debug("buildGraph - Adding edge:", dep.trim(), act.id);
         g.setEdge(dep.trim(), act.id);
       }
     });

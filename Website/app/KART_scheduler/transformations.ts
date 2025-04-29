@@ -32,6 +32,7 @@ import { Queue } from "@datastructures-js/queue";
 import { Activity } from "../entities/activity";
 import { Graph, Edge } from "graphlib";
 import { ScheduledActivity } from "../entities/scheduled-activity";
+import { TimeSlots } from "../entities/time-slots";
 
 // === Gaussian-based Duration Calculation ===
 export function calculateExpectedDuration(
@@ -44,8 +45,8 @@ export function calculateExpectedDuration(
 
 function calculateWeightedActivityPriority(
   activity: Activity,
-  weight_of_revealingness: number,
-  weight_of_resources: number
+  weightOfRevealingness: number,
+  weightOfResources: number
 ): number {
   // Calculate the weighted priority of an activity based on its attributes
   // (Lowest score gets processed first)
@@ -53,41 +54,41 @@ function calculateWeightedActivityPriority(
   //    -> High resource requirement => lower score (schedule as soon as possible)
 
   let score =
-    activity.level_of_revealingness * weight_of_revealingness -
-    activity.people_required * weight_of_resources;
+    activity.level_of_revealingness * weightOfRevealingness -
+    activity.people_required * weightOfResources;
 
   return score; // < 0 ? 0 : score; // Ensure non-negative score
 }
 
-// === Topological Sort ===
+// === Activity Queue Construction ===
 function constructPriorityQueue(
   graph: Graph,
-  weight_of_revealingness: number,
-  weight_of_resources: number
+  weightOfRevealingness: number,
+  weightOfResources: number
 ): Queue<Activity> {
-  
   // +++ Step 1: Define sorting rules for priority queue +++
   // Debugging output
-  (activity: Activity) => {
-    const weighted_priority = calculateWeightedActivityPriority(
-      activity,
-      weight_of_revealingness,
-      weight_of_resources
-    );
-    console.debug(
-      "\nconstructPriorityQueue - Activity (",
-      activity.activity.trim(),
-      ") | Score: ",
-      weighted_priority
-    );
-  };
+  // (activity: Activity) => {
+  //   const weightedPriority = calculateWeightedActivityPriority(
+  //     activity,
+  //     weightOfRevealingness,
+  //     weightOfResources
+  //   );
+  //   console.debug(
+  //     "\nconstructPriorityQueue - Activity (",
+  //     activity.activity.trim(),
+  //     ") | Score: ",
+  //     weightedPriority
+  //   );
+  // };
+
   // Create a priority queue for activities which sorts by level_of_revealingness (ascending)
   const weightedActivityQueue = new MinPriorityQueue<Activity>(
     (activity: Activity): number =>
       calculateWeightedActivityPriority(
         activity,
-        weight_of_revealingness,
-        weight_of_resources
+        weightOfRevealingness,
+        weightOfResources
       )
   );
 
@@ -140,14 +141,14 @@ function constructPriorityQueue(
 
   // +++ Step 5: Provide debugging information and return the sortedActivitiesQueue +++
   // Debugging output
-  console.debug("\nconstructPriorityQueue - Sorted graph nodes:");
-  sortedActivitiesQueue.toArray().forEach((activity: Activity) => {
-    console.debug(
-      ` - Activity: '${activity.activity.trim()}', Revealingness: ${
-        activity.level_of_revealingness
-      }`
-    );
-  });
+  // console.debug("\nconstructPriorityQueue - Sorted graph nodes:");
+  // sortedActivitiesQueue.toArray().forEach((activity: Activity) => {
+  //   console.debug(
+  //     ` - Activity: '${activity.activity.trim()}', Revealingness: ${
+  //       activity.level_of_revealingness
+  //     }`
+  //   );
+  // });
 
   return sortedActivitiesQueue;
 }
@@ -156,73 +157,168 @@ function constructPriorityQueue(
 export function scheduleActivities(
   graph: Graph,
   peopleAvailableAtStart: number,
-  softMaximumOfRevealingness: number = 0,
-  hardMaximumOfRevealingsness: number = 0
+  dailyProjectCost: number = 100,
+  expectedProjectDuration: number = 30,
+  initialResourceWeight: number = 2,
+  initialRevealingnessWeight: number = 2,
+  softMaximumOfRevealingness: number = 3,
+  hardMaximumOfRevealingsness: number = 6,
+  revealingnessDecayRate: number = 0.9,
 ): { schedule: ScheduledActivity[]; totalCost: number } {
-  const activityQueue = constructPriorityQueue(graph, 2, 1); // Topologically sorted nodes
   const schedule: ScheduledActivity[] = [];
 
-  let timestamp = 0; // Initialize timestamp for scheduling
+  // Dict to track state of time slots
+  const timeSlots: TimeSlots = {};
 
-  // while (activityQueue.length > 0) {
-  return { schedule, totalCost: 0 }; // Placeholder for total cost calculation
-}
+  let weightOfResources = initialResourceWeight;
+  let weightOfRevealingness = initialRevealingnessWeight;
+  let peopleAvailable = peopleAvailableAtStart;
+  let currentTimeSlot = 0;
 
-// Helper function to find the best start time for an activity
-function findBestStartTime(
-  activity: Activity,
-  earliestStart: number,
-  timeSlots: Record<
-    number,
-    { peopleUsed: number; cost: number; revealingnessSum: number }
-  >,
-  totalPeople: number,
-  revealingnessThreshold: number
-): { bestStart: number; bestPenalty: number } {
-  let bestStart = earliestStart;
-  let bestPenalty = Infinity;
+  while (true) {
+    const orderedActivities = constructPriorityQueue(
+      graph,
+      weightOfRevealingness,
+      weightOfResources
+    ).toArray();
 
-  for (
-    let potentialStart = earliestStart;
-    potentialStart < earliestStart + 100;
-    potentialStart++
-  ) {
-    let canSchedule = true;
-    let revealingPenalty = 0;
-
-    for (
-      let t = potentialStart;
-      t < potentialStart + activity.expected_duration;
-      t++
-    ) {
-      const timeSlot = timeSlots[t] || {
-        peopleUsed: 0,
-        cost: 0,
-        revealingnessSum: 0,
-      };
-
-      // Check resource constraint
-      if (timeSlot.peopleUsed + activity.people_required > totalPeople) {
-        canSchedule = false;
-        break;
-      }
-
-      // Calculate revealingness penalty
-      const projectedRevealingness =
-        timeSlot.revealingnessSum + activity.level_of_revealingness;
-      if (projectedRevealingness > revealingnessThreshold) {
-        revealingPenalty += projectedRevealingness - revealingnessThreshold;
-      }
+    if (orderedActivities.length === 0) {
+      console.debug("ScheduleActivities - Scheduling completed.");
+      break; // Exit loop
     }
 
-    if (canSchedule && revealingPenalty < bestPenalty) {
-      bestPenalty = revealingPenalty;
-      bestStart = potentialStart;
+    // If no activities have already been scheduled in the current time slot,
+    // initialize the time slot with the default available people and the decayed revealingness of the previous time slot
+    if (!timeSlots[currentTimeSlot]) {
+      timeSlots[currentTimeSlot] = {
+        peopleAvailable: peopleAvailable,
+        totalRevealingness: -1, // Initialize to -1 as a placeholder
+        plannedActivityIds: [],
+      };
+    }
+    
+    // Update the time slot with the decayed revealingness of the previous time slot
+    timeSlots[currentTimeSlot].totalRevealingness = timeSlots[currentTimeSlot - 1]?.totalRevealingness*revealingnessDecayRate || 0
 
-      // Stop early if no penalty
-      if (revealingPenalty === 0) break;
+    orderedActivities.forEach((activity: Activity) => {
+      const activityStartTime = currentTimeSlot;
+      const activityEndTime = Math.ceil(
+        currentTimeSlot + activity.expected_duration
+      );
+
+      if (
+        activityCanBeScheduled(
+          activity,
+          currentTimeSlot,
+          timeSlots,
+          orderedActivities,
+          activityStartTime,
+          activityEndTime,
+          schedule,
+          hardMaximumOfRevealingsness
+        )
+      ) {
+        // Add the ScheduledActivity to the schedule
+        schedule.push({ ...activity, activityStartTime, activityEndTime });
+
+        // Remove the activity from the graph
+        graph.removeNode(activity.id);
+
+        // Update the timeslots for activity duration
+        for (let i = currentTimeSlot; i <= activityEndTime; i++) {
+          // Again, if no activities have already been scheduled in given time slot, initialize the time slot
+          if (!timeSlots[i]) {
+            timeSlots[i] = {
+              peopleAvailable: peopleAvailable,
+              plannedActivityIds: [activity.id],
+              totalRevealingness: -1 // Initialize to -1 as a placeholder, will be updated in a later moment of the while loop
+            };
+          }
+
+          // Update the time slot with the activity's expected duration
+          timeSlots[i].peopleAvailable -= activity.people_required;
+          timeSlots[i].totalRevealingness += activity.level_of_revealingness;
+          timeSlots[i].plannedActivityIds.push(activity.id);
+        }
+      }
+    });
+
+    // Update weightOfRevealingness based on how far the current revealingness is from the soft maximum
+    weightOfRevealingness +=
+      0.5 *
+      (timeSlots[currentTimeSlot].totalRevealingness -
+        softMaximumOfRevealingness);
+
+    // Update weightOfResources based on the remaining project duration
+    weightOfResources -= initialResourceWeight / expectedProjectDuration;
+
+    // Update the current time slot
+    currentTimeSlot += 1;
+  }
+
+  // Calculate the total cost based on the number of time slots used
+  return {
+    schedule: schedule,
+    totalCost: currentTimeSlot * dailyProjectCost,
+  };
+}
+
+function activityCanBeScheduled(
+  activity: Activity,
+  currentTimeSlot: number,
+  timeSlots: TimeSlots,
+  orderedActivities: Activity[],
+  activityStartTime: number,
+  activityEndTime: number,
+  scheduledActivities: ScheduledActivity[],
+  maximumSimultaniousRevealingness: number = 8
+) {
+  // 1 - Check if there are enough people available in all time slots
+  for (let i = activityStartTime; i <= activityEndTime; i++) {
+    if (timeSlots[i] === undefined) {
+      continue; // Skip if the time slot is not defined
+    }
+
+    const timeSlot = timeSlots[i];
+    const peopleAvailableAtTimeSlot = timeSlot.peopleAvailable ?? Infinity;
+
+    if (peopleAvailableAtTimeSlot < activity.people_required) {
+      return false; // Not enough people available
+    }
+
+    const revealingnessAtTimeSlot = timeSlot.totalRevealingness ?? 0;
+    if (revealingnessAtTimeSlot > maximumSimultaniousRevealingness) {
+      return false; // Revealingness exceeds the soft maximum
     }
   }
 
-  return { bestStart, bestPenalty };
+  // 2 - Check if the activity depends on any other activity that is not yet scheduled
+  for (const activity of orderedActivities) {
+    const dependsOnQueuedActivity = activity.dependencies.find(
+      (dependency) => dependency === activity.id
+    );
+
+    if (dependsOnQueuedActivity) {
+      return false; // Activity cannot be scheduled yet
+    }
+  }
+
+  // 3 - Check if all dependencies in the schedule are completed before the activity starts
+  if (
+    activity.dependencies.some(
+      (dependency) =>
+        !scheduledActivities.some(
+          (scheduledActivity) =>
+            scheduledActivity.id === dependency &&
+            scheduledActivity.activityEndTime <= activityStartTime
+        )
+    )
+  ) {
+    return false; // Dependency is not yet completed
+  }
+
+  console.debug(
+    `activityCanBeScheduled - Activity '${activity.activity.trim()}' can be scheduled at time slot ${currentTimeSlot}.`
+  );
+  return true; // Activity can be scheduled
 }
