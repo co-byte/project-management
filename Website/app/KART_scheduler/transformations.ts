@@ -1,48 +1,35 @@
+/**
+ * Algorithm-Specific Methods for Project Management Scheduler
+ *
+ * This file contains core algorithms and utility functions for scheduling and 
+ * dependency management in the project management scheduler. These methods 
+ * are highly specific to the current scheduling logic and are prone to change 
+ * as the scheduling requirements evolve.
+ *
+ * Functions:
+ * - calculateExpectedDuration: Calculates the expected duration of an activity 
+ *   using a Gaussian-based formula.
+ * - constructPriorityQueue: Performs a topological sort on a directed graph to determine 
+ *   the order of activities based on dependencies.
+ * - scheduleActivities: Implements a resource-constrained scheduling algorithm 
+ *   with cost tracking and revealingness penalties.
+ *
+ * Dependencies:
+ * - Relies on the `graphlib` library for graph operations.
+ * - Uses `Activity` and `ScheduledActivity` interfaces for type definitions.
+ *
+ * Notes:
+ * - The algorithms in this file are subject to change as new requirements 
+ *   or optimizations are introduced.
+ * - Ensure that the input graph is properly constructed and validated before 
+ *   using these functions.
+ * - The `calculateExpectedDuration` function assumes that optimistic, likely, 
+ *   and pessimistic durations are provided as inputs.
+ */
+
 import { Activity } from "../entities/activity";
 import { Graph, Edge } from "graphlib";
-import { Row } from "../entities/row";
 import { ScheduledActivity } from "../entities/scheduled-activity";
-
-export function calculateDependencies(rows: Row[]): Record<string, string[]> {
-  const dependencies: Record<string, string[]> = {};
-
-  // Iterate through each row to extract dependencies
-  rows.forEach((row: any) => {
-    const deps =
-      row.predecessor?.trim() !== "/"
-        ? row.predecessor.split(",").map((d: string) => d.trim())
-        : [];
-    dependencies[row.wbs_code] = deps;
-  });
-
-  return dependencies;
-}
-
-export function calculateActivities(
-  rows: any[],
-  dependencies: Record<string, string[]>
-): Activity[] {
-  return rows.map((row: any) => ({
-    id: row.wbs_code,
-    activity: row.activity,
-    optimistic_duration: parseFloat(row.optimistic_duration),
-    likely_duration: parseFloat(row.likely_duration),
-    pessimistic_duration: parseFloat(row.pessimistic_duration),
-    expected_duration: calculateExpectedDuration(
-      parseFloat(row.optimistic_duration),
-      parseFloat(row.likely_duration),
-      parseFloat(row.pessimistic_duration)
-    ),
-    people_required: parseInt(row.people_required),
-    monetary_cost_per_day: parseFloat(row.monetary_cost_per_day),
-    level_of_revealingness: parseFloat(row.level_of_revealingness),
-    chance_of_delays: parseFloat(row.chance_of_delays),
-    weight_of_delays: parseFloat(row.weight_of_delays),
-    chance_of_losing_people: parseFloat(row.chance_of_losing_people),
-    weight_of_losing_people: parseFloat(row.weight_of_losing_people),
-    dependencies: dependencies[row.wbs_code] || [],
-  }));
-}
 
 // === Gaussian-based Duration Calculation ===
 export function calculateExpectedDuration(
@@ -53,24 +40,9 @@ export function calculateExpectedDuration(
   return (o + 4 * m + p) / 6;
 }
 
-// === Graph Construction ===
-export function buildGraph(activities: Activity[]): Graph {
-  const g = new Graph();
-
-  activities.forEach((act) => {
-    g.setNode(act.id, act);
-    act.dependencies.forEach((dep: string) => {
-      if (dep && dep.trim() && dep !== "/") {
-        g.setEdge(dep.trim(), act.id);
-      }
-    });
-  });
-
-  return g;
-}
 
 // === Topological Sort ===
-export function topologicalSort(graph: Graph): string[] {
+function constructPriorityQueue(graph: Graph): string[] {
   const inDegree: Record<string, number> = {};
   const queue: string[] = [];
   const sorted: string[] = [];
@@ -110,7 +82,7 @@ export function scheduleActivities(
   totalPeople: number,
   reveilingsness_threshold: number = 0
 ): { schedule: ScheduledActivity[]; totalCost: number } {
-  const sorted = topologicalSort(graph);
+  const sorted = constructPriorityQueue(graph);
   const schedule: ScheduledActivity[] = [];
 
   const timeSlots: {

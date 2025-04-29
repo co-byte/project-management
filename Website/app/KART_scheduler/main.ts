@@ -2,12 +2,12 @@ import * as fs from "fs"; // Node.js file system for saving the JSON output
 import { lastValueFrom } from "rxjs";
 
 import { ingestCSV } from "../ingestion/csv_ingestion";
+import { scheduleActivities } from "../KART_scheduler/transformations";
 import {
   buildGraph,
-  scheduleActivities,
-  calculateDependencies,
   calculateActivities,
-} from "../KART_scheduler/transformations";
+  calculateDependencies,
+} from "../KART_scheduler/utility";
 import { Activity } from "../entities/activity";
 
 // === Constants ===
