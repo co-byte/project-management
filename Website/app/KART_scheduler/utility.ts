@@ -72,13 +72,20 @@ export function buildGraph(activities: Activity[]): Graph {
   const g = new Graph();
 
   activities.forEach((act) => {
+    console.debug("buildGraph - Adding node:", act.id, act.activity);
+
     g.setNode(act.id, act);
     act.dependencies.forEach((dep: string) => {
       if (dep && dep.trim() && dep !== "/") {
+        console.debug("buildGraph - Adding edge:", dep.trim(), act.id);
         g.setEdge(dep.trim(), act.id);
       }
     });
   });
 
+  console.debug("buildGraph - Graph nodes:");
+  g.nodes().forEach((node) => {
+    console.debug(" - ",node, "activity='",g.node(node).activity.trim(), "'\t| revealingness=",g.node(node).level_of_revealingness), " | ...";
+  });
   return g;
 }
