@@ -163,7 +163,7 @@ export function scheduleActivities(
   initialRevealingnessWeight: number = 2,
   softMaximumOfRevealingness: number = 3,
   hardMaximumOfRevealingsness: number = 6,
-  revealingnessDecayRate: number = 0.9,
+  revealingnessDecayRate: number = 0.9
 ): { schedule: ScheduledActivity[]; totalCost: number } {
   const schedule: ScheduledActivity[] = [];
 
@@ -192,13 +192,16 @@ export function scheduleActivities(
     if (!timeSlots[currentTimeSlot]) {
       timeSlots[currentTimeSlot] = {
         peopleAvailable: peopleAvailable,
-        totalRevealingness: -1, // Initialize to -1 as a placeholder
+        totalRevealingness: 0, // Initialize to 0 as a placeholder
         plannedActivityIds: [],
       };
     }
-    
+
     // Update the time slot with the decayed revealingness of the previous time slot
-    timeSlots[currentTimeSlot].totalRevealingness = timeSlots[currentTimeSlot - 1]?.totalRevealingness*revealingnessDecayRate || 0
+    timeSlots[currentTimeSlot].totalRevealingness =
+      timeSlots[currentTimeSlot].totalRevealingness +
+        timeSlots[currentTimeSlot - 1]?.totalRevealingness *
+          revealingnessDecayRate || 0;
 
     orderedActivities.forEach((activity: Activity) => {
       const activityStartTime = currentTimeSlot;
@@ -231,7 +234,7 @@ export function scheduleActivities(
             timeSlots[i] = {
               peopleAvailable: peopleAvailable,
               plannedActivityIds: [activity.id],
-              totalRevealingness: -1 // Initialize to -1 as a placeholder, will be updated in a later moment of the while loop
+              totalRevealingness: 0, // Initialize to -1 as a placeholder, will be updated in a later moment of the while loop
             };
           }
 
@@ -271,7 +274,7 @@ function activityCanBeScheduled(
   activityStartTime: number,
   activityEndTime: number,
   scheduledActivities: ScheduledActivity[],
-  maximumSimultaniousRevealingness: number = 8
+  maximumSimultaniousRevealingness: number
 ) {
   // 1 - Check if there are enough people available in all time slots
   for (let i = activityStartTime; i <= activityEndTime; i++) {
@@ -287,8 +290,11 @@ function activityCanBeScheduled(
     }
 
     const revealingnessAtTimeSlot = timeSlot.totalRevealingness ?? 0;
-    if (revealingnessAtTimeSlot > maximumSimultaniousRevealingness) {
-      return false; // Revealingness exceeds the soft maximum
+    if (
+      revealingnessAtTimeSlot + activity.level_of_revealingness >
+      maximumSimultaniousRevealingness
+    ) {
+      return false; // Revealingness exceeds the hard maximum
     }
   }
 

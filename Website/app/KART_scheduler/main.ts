@@ -13,20 +13,41 @@ import { ScheduledActivity } from "../entities/scheduled-activity";
 
 // === Constants ===
 const jsonOutputPath = "./Website/data/schedule_kart.json"; // Path to save the JSON output
-const totalPeople = 6; // Configure the people available at the start of the project
+
+const totalPeople = 6;                  // The amount of people available at the start of the project
+const dailyProjectCost = 100;           // Daily project cost (in dollars)
+const expectedProjectDuration = 30;     // Expected project duration (in days)
+const initialResourceWeight = 2;        // Initial resource weight
+const initialRevealingnessWeight = 2;   // Initial revealingness weight
+const softMaximumOfRevealingness = 3;   // Soft maximum of revealingness
+const hardMaximumOfRevealingsness = 8;  // Hard maximum of revealingness
+const revealingnessDecayRate = 0.6;     // Revealingness decay rate
+
 
 // === Main Function ===
 (async () => {
   console.log(`\n📊 Gantt Schedule (Max ${totalPeople} People):`);
 
+  // Prepare the data
   const rows = await lastValueFrom(ingestCSV("Website/data/input.csv"));
   const dependencies = calculateDependencies(rows);
-
   const activities: Activity[] = calculateActivities(rows, dependencies);
-
   const graph = buildGraph(activities);
-  const { schedule, totalCost } = scheduleActivities(graph, totalPeople);
 
+  // Schedule the activities
+  const { schedule, totalCost } = scheduleActivities(
+    graph,
+    totalPeople,
+    dailyProjectCost,
+    expectedProjectDuration,
+    initialResourceWeight,
+    initialRevealingnessWeight,
+    softMaximumOfRevealingness,
+    hardMaximumOfRevealingsness,
+    revealingnessDecayRate
+  );
+
+  // Print the schedule
   schedule.forEach((activity: ScheduledActivity) => {
     console.log(
       `- ${activity.id.padEnd(10)} | ${activity.activity.padEnd(
@@ -38,11 +59,9 @@ const totalPeople = 6; // Configure the people available at the start of the pro
       ).toFixed(2)}`
     );
   });
-
   console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
 
-  // Dirty fix
-  // Transform the schedule to match the field names as defined in PERT
+  // Dirty fix to transform the schedule names to match the field names as defined in PERT
   const transformedSchedule = schedule.map((activity) => ({
     ...activity,
     start: activity.activityStartTime,
@@ -56,7 +75,6 @@ const totalPeople = 6; // Configure the people available at the start of the pro
     totalCost: totalCost,
     schedule: transformedSchedule,
   };
-
   fs.writeFileSync(jsonOutputPath, JSON.stringify(output, null, 2));
 
   console.log("Schedule has been saved to ", jsonOutputPath);
