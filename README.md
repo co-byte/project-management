@@ -8,7 +8,7 @@ To plan the project using PERT and KART, execute:
 
 ```bash
 npx ts-node .\Website\app\PERT_GANTT_scheduler.ts
-npx ts-node .\Website\app\KART_GANTT_scheduler.ts
+npx ts-node .\Website\app\KART_scheduler\main.ts
 ```
 
 ## Displaying the Gantt charts

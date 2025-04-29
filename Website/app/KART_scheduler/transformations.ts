@@ -1,39 +1,60 @@
-import { ingestCSV } from "./csv_ingestion";
+import { Activity } from "../entities/activity";
 import { Graph, Edge } from "graphlib";
-import { lastValueFrom } from "rxjs";
-import * as fs from "fs"; // Node.js file system for saving the JSON output
+import { Row } from "../entities/row";
+import { ScheduledActivity } from "../entities/scheduled-activity";
 
-const jsonOutputPath = "./Website/data/schedule_kart.json"; // Path to save the JSON output
+export function calculateDependencies(rows: Row[]): Record<string, string[]> {
+  const dependencies: Record<string, string[]> = {};
 
-interface Activity {
-  id: string;
-  activity: string;
-  optimistic_duration: number;
-  likely_duration: number;
-  pessimistic_duration: number;
-  expected_duration: number;
-  people_required: number;
-  monetary_cost_per_day: number;
-  chance_of_delays: number;
-  weight_of_delays: number;
-  chance_of_losing_people: number;
-  weight_of_losing_people: number;
-  level_of_revealingness: number;
-  dependencies: string[];
+  // Iterate through each row to extract dependencies
+  rows.forEach((row: any) => {
+    const deps =
+      row.predecessor?.trim() !== "/"
+        ? row.predecessor.split(",").map((d: string) => d.trim())
+        : [];
+    dependencies[row.wbs_code] = deps;
+  });
+
+  return dependencies;
 }
 
-interface ScheduledActivity extends Activity {
-  start: number;
-  end: number;
+export function calculateActivities(
+  rows: any[],
+  dependencies: Record<string, string[]>
+): Activity[] {
+  return rows.map((row: any) => ({
+    id: row.wbs_code,
+    activity: row.activity,
+    optimistic_duration: parseFloat(row.optimistic_duration),
+    likely_duration: parseFloat(row.likely_duration),
+    pessimistic_duration: parseFloat(row.pessimistic_duration),
+    expected_duration: calculateExpectedDuration(
+      parseFloat(row.optimistic_duration),
+      parseFloat(row.likely_duration),
+      parseFloat(row.pessimistic_duration)
+    ),
+    people_required: parseInt(row.people_required),
+    monetary_cost_per_day: parseFloat(row.monetary_cost_per_day),
+    level_of_revealingness: parseFloat(row.level_of_revealingness),
+    chance_of_delays: parseFloat(row.chance_of_delays),
+    weight_of_delays: parseFloat(row.weight_of_delays),
+    chance_of_losing_people: parseFloat(row.chance_of_losing_people),
+    weight_of_losing_people: parseFloat(row.weight_of_losing_people),
+    dependencies: dependencies[row.wbs_code] || [],
+  }));
 }
 
-// === PERT Duration Calculation ===
-function calculateExpectedDuration(o: number, m: number, p: number): number {
+// === Gaussian-based Duration Calculation ===
+export function calculateExpectedDuration(
+  o: number,
+  m: number,
+  p: number
+): number {
   return (o + 4 * m + p) / 6;
 }
 
 // === Graph Construction ===
-function buildGraph(activities: Activity[]): Graph {
+export function buildGraph(activities: Activity[]): Graph {
   const g = new Graph();
 
   activities.forEach((act) => {
@@ -49,7 +70,7 @@ function buildGraph(activities: Activity[]): Graph {
 }
 
 // === Topological Sort ===
-function topologicalSort(graph: Graph): string[] {
+export function topologicalSort(graph: Graph): string[] {
   const inDegree: Record<string, number> = {};
   const queue: string[] = [];
   const sorted: string[] = [];
@@ -84,7 +105,7 @@ function topologicalSort(graph: Graph): string[] {
 }
 
 // === Resource-Constrained Scheduling with Cost Tracking ===
-function scheduleActivities(
+export function scheduleActivities(
   graph: Graph,
   totalPeople: number,
   reveilingsness_threshold: number = 0
@@ -176,68 +197,3 @@ function scheduleActivities(
 
   return { schedule, totalCost };
 }
-
-// === MAIN ===
-(async () => {
-  const rows = await lastValueFrom(ingestCSV("Website/data/input.csv"));
-
-  const dependencies: Record<string, string[]> = {};
-  rows.forEach((row: any) => {
-    const deps =
-      row.predecessor?.trim() !== "/"
-        ? row.predecessor.split(",").map((d: string) => d.trim())
-        : [];
-    dependencies[row.wbs_code] = deps;
-  });
-
-  const activities: Activity[] = rows.map((row: any) => ({
-    id: row.wbs_code,
-    activity: row.activity,
-    optimistic_duration: parseFloat(row.optimistic_duration),
-    likely_duration: parseFloat(row.likely_duration),
-    pessimistic_duration: parseFloat(row.pessimistic_duration),
-    expected_duration: calculateExpectedDuration(
-      parseFloat(row.optimistic_duration),
-      parseFloat(row.likely_duration),
-      parseFloat(row.pessimistic_duration)
-    ),
-    people_required: parseInt(row.people_required),
-    monetary_cost_per_day: parseFloat(row.monetary_cost_per_day),
-    level_of_revealingness: parseFloat(row.level_of_revealingness),
-    chance_of_delays: parseFloat(row.chance_of_delays),
-    weight_of_delays: parseFloat(row.weight_of_delays),
-    chance_of_losing_people: parseFloat(row.chance_of_losing_people),
-    weight_of_losing_people: parseFloat(row.weight_of_losing_people),
-    dependencies: dependencies[row.wbs_code] || [],
-  }));
-
-  const graph = buildGraph(activities);
-
-  const totalPeople = 4; // CHANGE this to simulate constraints
-  const { schedule, totalCost } = scheduleActivities(graph, totalPeople);
-
-  console.log(`\n📊 Gantt Schedule (Max ${totalPeople} People):`);
-  schedule.forEach((act) => {
-    console.log(
-      `- ${act.id.padEnd(10)} | ${act.activity.padEnd(
-        30
-      )} | Start: ${act.start.toFixed(0)} | End: ${act.end.toFixed(
-        0
-      )} | Cost: $${(act.monetary_cost_per_day * act.expected_duration).toFixed(
-        2
-      )}`
-    );
-  });
-
-  console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
-
-  // Save the total cost and schedule to a JSON file
-  let output = {
-    totalCost: totalCost,
-    schedule: schedule,
-  };
-
-  fs.writeFileSync(jsonOutputPath, JSON.stringify(output, null, 2));
-
-  console.log("Schedule has been saved to ", jsonOutputPath);
-})();
