@@ -193,7 +193,7 @@ function scheduleActivities(
     );
   });
 
-  console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
+  console.log(`\nTotal Accumulated Project Cost: $${totalCost.toFixed(2)}`);
 
   // Save the total cost and schedule to a JSON file
   let output = {
