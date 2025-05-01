@@ -157,15 +157,15 @@ function constructPriorityQueue(
 export function scheduleActivities(
   graph: Graph,
   peopleAvailableAtStart: number,
-  dailyProjectCost: number = 100,
-  expectedProjectDuration: number = 30,
-  initialResourceWeight: number = 2,
-  initialRevealingnessWeight: number = 2,
-  softMaximumOfRevealingness: number = 3,
-  hardMaximumOfRevealingsness: number = 6,
-  revealingnessDecayRate: number = 0.95,
-  startTimeSlot: number = 0,
-  startRevealingness: number = 0,
+  dailyProjectCost: number,
+  expectedProjectDuration: number,
+  initialResourceWeight: number,
+  initialRevealingnessWeight: number,
+  softMaximumOfRevealingness: number,
+  hardMaximumOfRevealingsness: number,
+  revealingnessDecayRate: number,
+  startTimeSlot: number,
+  startRevealingness: number,
 ): { schedule: ScheduledActivity[]; totalCost: number } {
   const schedule: ScheduledActivity[] = [];
 
