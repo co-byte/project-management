@@ -12,7 +12,8 @@ import { Activity } from "../entities/activity";
 import { ScheduledActivity } from "../entities/scheduled-activity";
 
 // === Constants ===
-const jsonOutputPath = "./Website/data/schedule_kart.json"; // Path to save the JSON output
+const csvInputPath = "./Website/data/input.csv";
+const jsonOutputPath = "./Website/data/schedule_kart.json";
 
 const totalPeople = 6;                  // The amount of people available at the start of the project
 const dailyProjectCost = 100;           // Daily project cost (in dollars)
@@ -29,7 +30,7 @@ const revealingnessDecayRate = 0.6;     // Revealingness decay rate
   console.log(`\n📊 Gantt Schedule (Max ${totalPeople} People):`);
 
   // Prepare the data
-  const rows = await lastValueFrom(ingestCSV("Website/data/input.csv"));
+  const rows = await lastValueFrom(ingestCSV(csvInputPath));
   const dependencies = calculateDependencies(rows);
   const activities: Activity[] = calculateActivities(rows, dependencies);
   const graph = buildGraph(activities);

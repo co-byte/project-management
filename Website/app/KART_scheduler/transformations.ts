@@ -163,7 +163,9 @@ export function scheduleActivities(
   initialRevealingnessWeight: number = 2,
   softMaximumOfRevealingness: number = 3,
   hardMaximumOfRevealingsness: number = 6,
-  revealingnessDecayRate: number = 0.9
+  revealingnessDecayRate: number = 0.95,
+  startTimeSlot: number = 0,
+  startRevealingness: number = 0,
 ): { schedule: ScheduledActivity[]; totalCost: number } {
   const schedule: ScheduledActivity[] = [];
 
@@ -173,7 +175,14 @@ export function scheduleActivities(
   let weightOfResources = initialResourceWeight;
   let weightOfRevealingness = initialRevealingnessWeight;
   let peopleAvailable = peopleAvailableAtStart;
-  let currentTimeSlot = 0;
+  let currentTimeSlot = startTimeSlot;
+
+  // Initialize the first time slot with available people and revealingness
+  timeSlots[startTimeSlot] = {
+    peopleAvailable: peopleAvailable,
+    totalRevealingness: startRevealingness,
+    plannedActivityIds: [],
+  };
 
   while (true) {
     const orderedActivities = constructPriorityQueue(
@@ -237,12 +246,13 @@ export function scheduleActivities(
               totalRevealingness: 0, // Initialize to -1 as a placeholder, will be updated in a later moment of the while loop
             };
           }
-
           // Update the time slot with the activity's expected duration
           timeSlots[i].peopleAvailable -= activity.people_required;
           timeSlots[i].totalRevealingness += activity.level_of_revealingness;
           timeSlots[i].plannedActivityIds.push(activity.id);
         }
+
+        // Update the revealingness of the activity
       }
     });
 
