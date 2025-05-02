@@ -1,0 +1,604 @@
+{
+  "totalCost": 640,
+  "schedule": [
+    {
+      "id": "SET_1.1",
+      "activity": "Register_dummy_domain_names",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 50,
+      "chance_of_delays": 1,
+      "weight_of_delays": 1,
+      "chance_of_losing_people": 1,
+      "weight_of_losing_people": 1,
+      "level_of_revealingness": 1,
+      "dependencies": [],
+      "start": 0,
+      "end": 2
+    },
+    {
+      "id": "SET_1.2",
+      "activity": "Establish_shell_company",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 4,
+      "expected_duration": 2.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 180,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 1,
+      "dependencies": [],
+      "start": 0,
+      "end": 2.1666666666666665
+    },
+    {
+      "id": "SET_1.3",
+      "activity": "Rent_secure_office_space",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 150,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 1,
+      "dependencies": [
+        "SET_1.2"
+      ],
+      "start": 2.1666666666666665,
+      "end": 4.166666666666666
+    },
+    {
+      "id": "SET_1.4",
+      "activity": "Engage_legal_consultants",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 4,
+      "expected_duration": 3,
+      "people_required": 1,
+      "monetary_cost_per_day": 180,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "SET_1.2"
+      ],
+      "start": 2.1666666666666665,
+      "end": 5.166666666666666
+    },
+    {
+      "id": "SET_1.5",
+      "activity": "Procure_secure_comms",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 100,
+      "chance_of_delays": 1,
+      "weight_of_delays": 1,
+      "chance_of_losing_people": 1,
+      "weight_of_losing_people": 1,
+      "level_of_revealingness": 1,
+      "dependencies": [
+        "SET_1.2"
+      ],
+      "start": 2.1666666666666665,
+      "end": 4.166666666666666
+    },
+    {
+      "id": "SET_1.6",
+      "activity": "Open_foreign_bank_accounts",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 220,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "SET_1.2"
+      ],
+      "start": 4.166666666666666,
+      "end": 7.333333333333332
+    },
+    {
+      "id": "OPS_2.1",
+      "activity": "Recruit_white_hat_hackers",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 3,
+      "monetary_cost_per_day": 300,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 5,
+      "weight_of_losing_people": 5,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "SET_1.3"
+      ],
+      "start": 8.166666666666666,
+      "end": 11.333333333333332
+    },
+    {
+      "id": "OPS_2.2",
+      "activity": "Acquire_exploit_kits",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 250,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 5,
+      "weight_of_losing_people": 5,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "SET_1.3"
+      ],
+      "start": 12.166666666666666,
+      "end": 15.333333333333332
+    },
+    {
+      "id": "OPS_2.4",
+      "activity": "Create_fake_social_profiles",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 100,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "SET_1.5"
+      ],
+      "start": 4.166666666666666,
+      "end": 6.166666666666666
+    },
+    {
+      "id": "OPS_2.3",
+      "activity": "Develop_custom_spyware",
+      "optimistic_duration": 3,
+      "likely_duration": 5,
+      "pessimistic_duration": 8,
+      "expected_duration": 5.166666666666667,
+      "people_required": 3,
+      "monetary_cost_per_day": 350,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 5,
+      "weight_of_losing_people": 5,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "OPS_2.1"
+      ],
+      "start": 11.333333333333332,
+      "end": 16.5
+    },
+    {
+      "id": "OPS_2.5",
+      "activity": "Set_up_test_network",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 4,
+      "expected_duration": 3,
+      "people_required": 2,
+      "monetary_cost_per_day": 180,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 1,
+      "dependencies": [
+        "OPS_2.2"
+      ],
+      "start": 17.333333333333332,
+      "end": 20.333333333333332
+    },
+    {
+      "id": "RECON_3.1",
+      "activity": "Conduct_cyber_recon",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 200,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "OPS_2.1",
+        "OPS_2.2"
+      ],
+      "start": 17.333333333333332,
+      "end": 20.5
+    },
+    {
+      "id": "RECON_3.3",
+      "activity": "Simulate_failure_patterns",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 120,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "OPS_2.2"
+      ],
+      "start": 15.333333333333332,
+      "end": 17.333333333333332
+    },
+    {
+      "id": "RECON_3.2",
+      "activity": "Launch_phishing_campaigns",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 2,
+      "monetary_cost_per_day": 150,
+      "chance_of_delays": 2,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "OPS_2.4"
+      ],
+      "start": 6.166666666666666,
+      "end": 8.166666666666666
+    },
+    {
+      "id": "ACCESS_4.1c",
+      "activity": "Access_via_zero_day",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 4,
+      "expected_duration": 3,
+      "people_required": 2,
+      "monetary_cost_per_day": 300,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 4,
+      "weight_of_losing_people": 4,
+      "level_of_revealingness": 5,
+      "dependencies": [
+        "OPS_2.3"
+      ],
+      "start": 16.5,
+      "end": 19.5
+    },
+    {
+      "id": "RECON_3.4",
+      "activity": "Deploy_decoy_servers",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 4,
+      "expected_duration": 3,
+      "people_required": 2,
+      "monetary_cost_per_day": 200,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 1,
+      "dependencies": [
+        "OPS_2.5"
+      ],
+      "start": 20.333333333333332,
+      "end": 23.333333333333332
+    },
+    {
+      "id": "ACCESS_4.1a",
+      "activity": "Access_via_credentials_breach",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 200,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "RECON_3.1"
+      ],
+      "start": 20.5,
+      "end": 23.666666666666668
+    },
+    {
+      "id": "ACCESS_4.1b",
+      "activity": "Access_via_insider_bribe",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 250,
+      "chance_of_delays": 3,
+      "weight_of_delays": 4,
+      "chance_of_losing_people": 5,
+      "weight_of_losing_people": 5,
+      "level_of_revealingness": 4,
+      "dependencies": [
+        "RECON_3.2"
+      ],
+      "start": 8.166666666666666,
+      "end": 10.166666666666666
+    },
+    {
+      "id": "SURV_5.1c",
+      "activity": "Monitor_network_traffic",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 2,
+      "monetary_cost_per_day": 200,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "ACCESS_4.1c"
+      ],
+      "start": 19.5,
+      "end": 21.5
+    },
+    {
+      "id": "SURV_5.1a",
+      "activity": "Deploy_internal_monitoring_scripts",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 2,
+      "monetary_cost_per_day": 180,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 1,
+      "dependencies": [
+        "ACCESS_4.1a"
+      ],
+      "start": 23.666666666666668,
+      "end": 25.666666666666668
+    },
+    {
+      "id": "SURV_5.1b",
+      "activity": "Compromise_internal_cameras",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 250,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "ACCESS_4.1b"
+      ],
+      "start": 12.166666666666666,
+      "end": 15.333333333333332
+    },
+    {
+      "id": "EXFIL_6.1c",
+      "activity": "Exfiltrate_DBs_via_tunneled_port",
+      "optimistic_duration": 2,
+      "likely_duration": 4,
+      "pessimistic_duration": 6,
+      "expected_duration": 4,
+      "people_required": 2,
+      "monetary_cost_per_day": 280,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "SURV_5.1c"
+      ],
+      "start": 21.5,
+      "end": 25.5
+    },
+    {
+      "id": "EXFIL_6.1a",
+      "activity": "Dump_internal_file_shares",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 240,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "SURV_5.1a"
+      ],
+      "start": 25.666666666666668,
+      "end": 28.833333333333336
+    },
+    {
+      "id": "EXFIL_6.1b",
+      "activity": "Keylog_and_collect_credentials",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 1,
+      "monetary_cost_per_day": 200,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "SURV_5.1b"
+      ],
+      "start": 21.333333333333332,
+      "end": 24.5
+    },
+    {
+      "id": "EXIT_7.1c",
+      "activity": "Erase_traffic_analysis_artifacts",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 2,
+      "monetary_cost_per_day": 210,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "EXFIL_6.1c"
+      ],
+      "start": 25.5,
+      "end": 27.5
+    },
+    {
+      "id": "EXIT_7.1a",
+      "activity": "Clean_up_credentials_path",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 4,
+      "expected_duration": 3,
+      "people_required": 2,
+      "monetary_cost_per_day": 220,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "EXFIL_6.1a"
+      ],
+      "start": 28.833333333333336,
+      "end": 31.833333333333336
+    },
+    {
+      "id": "EXIT_7.1b",
+      "activity": "Scrub_insider_contact_trails",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 200,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 3,
+      "weight_of_losing_people": 3,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "EXFIL_6.1b"
+      ],
+      "start": 24.5,
+      "end": 26.5
+    },
+    {
+      "id": "EXIT_7.2",
+      "activity": "Destroy_all_encrypted_devices",
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
+      "people_required": 1,
+      "monetary_cost_per_day": 150,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 3,
+      "dependencies": [
+        "EXIT_7.1a",
+        "EXIT_7.1b",
+        "EXIT_7.1c"
+      ],
+      "start": 31.833333333333336,
+      "end": 33.833333333333336
+    },
+    {
+      "id": "EXIT_7.3",
+      "activity": "Disperse_funds_and_liquidate",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 200,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "EXIT_7.2"
+      ],
+      "start": 33.833333333333336,
+      "end": 37
+    },
+    {
+      "id": "EXIT_7.4",
+      "activity": "Conduct_post_op_audit",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 220,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 2,
+      "weight_of_losing_people": 2,
+      "level_of_revealingness": 2,
+      "dependencies": [
+        "EXIT_7.2"
+      ],
+      "start": 33.833333333333336,
+      "end": 37
+    }
+  ]
+}
