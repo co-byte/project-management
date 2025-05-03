@@ -176,6 +176,7 @@ export function scheduleActivities(
   let weightOfRevealingness = initialRevealingnessWeight;
   let peopleAvailable = peopleAvailableAtStart;
   let currentTimeSlot = startTimeSlot;
+  let totalCost = 0;
 
   // Initialize the first time slot with available people and revealingness
   timeSlots[startTimeSlot] = {
@@ -250,6 +251,9 @@ export function scheduleActivities(
           timeSlots[i].peopleAvailable -= activity.people_required;
           timeSlots[i].totalRevealingness += activity.level_of_revealingness;
           timeSlots[i].plannedActivityIds.push(activity.id);
+
+          // Update the total cost based on the activity's monetary cost per day
+          totalCost += activity.monetary_cost_per_day;
         }
 
         // Update the revealingness of the activity
@@ -269,10 +273,12 @@ export function scheduleActivities(
     currentTimeSlot += 1;
   }
 
+  totalCost += (currentTimeSlot-startTimeSlot) * dailyProjectCost
+
   // Calculate the total cost based on the number of time slots used
   return {
     schedule: schedule,
-    totalCost: currentTimeSlot * dailyProjectCost,
+    totalCost: totalCost,
   };
 }
 
