@@ -25,7 +25,7 @@ let availablePeople = TOTAL_PEOPLE;
 let globalRevealingness = 0;
 let currentTime = 0;
 let currentDecayTime = 0;
-let decayFactor = 0.6;
+let decayFactor = 0.9;
 let totalCost = 0;
 let totalDelayDays = 0;
 
@@ -98,13 +98,13 @@ function applyRevealingnessDecay() {
         if (!activity.revealDecay50 && timeSinceEnd >= activity.expected_duration * 0.5) {
         globalRevealingness -= revealVal * 0.5;
         activity.revealDecay50 = true;
-        //log(`Partial decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
+        log(`Partial decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
         }
 
         if (!activity.revealDecay100 && timeSinceEnd >= activity.expected_duration * 0.75) {
         globalRevealingness -= revealVal * 0.5;
         activity.revealDecay100 = true;
-        //log(`Full decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
+        log(`Full decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
         }
     }
 }
@@ -139,29 +139,36 @@ function simulateStep(toDo) {
     startEligibleActivities(toDo);
     currentTime += 1;
 }
-
+let blocked = false;
+function checkIfBlocked(a, toDo){
+    const readyActivities = toDo.filter(a =>
+        a.start <= currentTime &&
+        a.dependencies.every(depId => done.some(d => d.id === depId))
+    );
+    const anyCanStart = readyActivities.some(a =>
+        a.people_required <= availablePeople
+    );
+    //log(readyActivities)
+    if (!anyCanStart && readyActivities.length > 0 && inProgress.length === 0) {
+        //log("FAIL – All ready activities are blocked due to resource constraints.");
+        //log("Current Time:", currentTime);
+        //log("Available People:", availablePeople);
+        //log("Ready Activities:", readyActivities);
+        blocked = true;
+        failingActivity = readyActivities[0]; // Or store all if you want
+    }  
+}
 function simulateProject(schedule) {
-    const toDo = [...schedule];
+    let toDo = [...schedule];
     while (toDo.length > 0 || inProgress.length > 0) {
-        let blocked 
-        toDo.every(a => {
-                if(a.start > currentTime ||
-                    a.people_required > availablePeople ||
-                    !a.dependencies.every(depId => done.some(d => d.id === depId) ||
-                    inProgress.length == 0
-                )){
-                    blocked = true;
-                    failingActivity = a;
-                }
-            }
-        );
+        toDo.every(a => checkIfBlocked(a, toDo));
     
-        if (blocked && inProgress.length === 0) {
+        if (blocked) {
             //log("Deadlock: Remaining activities are blocked.");
             
-            toDo.every(a => {
-                unfinishedActivities.push(a.id)
-            })
+            toDo.every(a => unfinishedActivities.push(a.id))
+            //log("failures")
+            //log(toDo)
             for (let i = toDo.length - 1; i >= 0; i--) {
                 const activity = toDo[i];
                 const dependenciesMet = activity.dependencies.every(depId =>
@@ -170,7 +177,8 @@ function simulateProject(schedule) {
             }
             return false;
         }
-        
+        //log("time")
+        //log(currentTime)
         simulateStep(toDo);
     }
     return true;
@@ -199,8 +207,8 @@ function printFinalResult(projectFinished) {
     return result;
 }
 
-outputFile="../data/underground_60Decay_KART_results.json"
-inputFile = "../data/schedules/underground_schedule_kart.json"
+outputFile="../data/input_KART_results.json"
+inputFile = "../data/schedules/input_schedule_kart.json"
 // ======= MAIN =========
 function getSchedule(){
     // Path to your schedule JSON
@@ -228,6 +236,7 @@ fs.writeFileSync(outputFile, "[\n");
 
 for (let i = 0; i < amountOfLoops; i++) {
     let tempSchedule = JSON.parse(JSON.stringify(schedule));
+    blocked = false;
     availablePeople = TOTAL_PEOPLE;
     globalRevealingness = 0;
     currentTime = 0;
@@ -326,13 +335,13 @@ fs.appendFileSync(outputFile, "]"); // Close JSON array
 //                 const delayCost = activity.weight_of_delays * activity.monetary_cost_per_day * activity.people_required;
 //                 totalCost += delayCost;
 //                 delays.push({ activity: activity.id, revealingnessFactor: globalRevealingness.toFixed(3) });
-//                 //log(`Delay in ${activity.activity} (Chance: ${(delayChance * 100).toFixed(1)}%)`);
+//                 log(`Delay in ${activity.activity} (Chance: ${(delayChance * 100).toFixed(1)}%)`);
 //             }
 
 //             if (Math.random() < peopleLossChance) {
 //                 availablePeople -= activity.weight_of_losing_people;
 //                 peopleLost.push({ activity: activity.id, revealingnessFactor: globalRevealingness.toFixed(3) });
-//                 //log(`Lost ${activity.weight_of_losing_people} people in ${activity.activity} (Chance: ${(peopleLossChance * 100).toFixed(1)}%)`);
+//                 log(`Lost ${activity.weight_of_losing_people} people in ${activity.activity} (Chance: ${(peopleLossChance * 100).toFixed(1)}%)`);
 //                 if (availablePeople < 0) availablePeople = 0;
 //             }
 
@@ -429,8 +438,8 @@ fs.appendFileSync(outputFile, "]"); // Close JSON array
 //         total
 //     };
 
-//     //log("\n FINAL RESULT:");
-//     //log(JSON.stringify(result, null, 2));
+//     log("\n FINAL RESULT:");
+//     log(JSON.stringify(result, null, 2));
 //     return result;
 // }
 
