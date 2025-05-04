@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 dataDir = "C:/Users/cobev/OneDrive - UGent/2024_2025_Informatica/sem2/project_management/planning-application/project-management/Website/data/v2/"
-outputFile= dataDir + "/results/kartel/rcp_8_people.json"
-inputFile = dataDir + "/schedules/rcp_8_people.json"
+outputFile = dataDir + "/results/kartel/kart_8_people_conservative.json"
+inputFile = dataDir + "/schedules/kart_8_people_conservative.json"
 const decayFactor = 0.6;
 
 const TOTAL_PEOPLE = 8;
@@ -15,7 +15,7 @@ const REVEALINGNESS_VALUES = {
     4: 0.05,
     5: 0.1
 };
-  
+
 const CHANCE_VALUES = {
     1: 0.05,
     2: 0.10,
@@ -24,8 +24,8 @@ const CHANCE_VALUES = {
     5: 0.30
 };
 let CompletionReward = 150000;
-let baseCostPerDay = 100;  
-let failingActivity;  
+let baseCostPerDay = 100;
+let failingActivity;
 let unfinishedActivities = [];
 let availablePeople = TOTAL_PEOPLE;
 let globalRevealingness = 0;
@@ -39,7 +39,11 @@ let peopleLost = [];
 let done = [];
 let inProgress = [];
 
-let results =[];
+let results = [];
+
+function log(...args) {
+    console.log(...args);
+}
 
 function calculateEffectiveChance(base, scale) {
     return base * (1 + scale);
@@ -49,13 +53,14 @@ function checkFinishedActivities() {
     for (let i = inProgress.length - 1; i >= 0; i--) {
         const activity = inProgress[i];
         if (currentTime >= activity.end) {
-            //log(`Finished ${activity.activity} at time ${currentTime}`);
+            log(`Finished ${activity.activity} at time ${currentTime}`);
             activity.finishedAt = currentTime;
             done.push(activity);
             inProgress.splice(i, 1);
             availablePeople += activity.people_required;
             applyPossibleRevealingnessDecay()
 
+            log('Revealingness (t=', currentTime, '): ', globalRevealingness.toFixed(3));
             const delayChance = calculateEffectiveChance(CHANCE_VALUES[activity.chance_of_delays], globalRevealingness);
             const peopleLossChance = calculateEffectiveChance(CHANCE_VALUES[activity.chance_of_losing_people], globalRevealingness);
 
@@ -80,29 +85,29 @@ function checkFinishedActivities() {
     }
 }
 
-function applyPossibleRevealingnessDecay(){
+function applyPossibleRevealingnessDecay() {
     let amountOfDaysPassed = currentTime - currentDecayTime;
     currentDecayTime = currentTime;
     // log(`Days of decay ${amountOfDaysPassed} with current revealingness ${globalRevealingness}, total decay loss ${decayFactor**amountOfDaysPassed}`)
-    globalRevealingness = globalRevealingness * (decayFactor**amountOfDaysPassed)
+    globalRevealingness = globalRevealingness * (decayFactor ** amountOfDaysPassed)
 }
 
 function startEligibleActivities(toDo) {
     for (let i = toDo.length - 1; i >= 0; i--) {
         const activity = toDo[i];
         const dependenciesMet = activity.dependencies.every(depId =>
-        done.some(d => d.id === depId)
+            done.some(d => d.id === depId)
         );
 
         if (activity.start <= currentTime && dependenciesMet && availablePeople >= activity.people_required) {
-            //log(`Starting ${activity.activity} at time ${currentTime}`);
+            log(`Starting ${activity.activity} at time ${currentTime}`);
             const revealAdd = REVEALINGNESS_VALUES[activity.level_of_revealingness] || 0;
-            globalRevealingness += revealAdd*activity.expected_duration;
-            //log(`Revealingness increased by ${revealAdd.toFixed(3)} → Total: ${globalRevealingness.toFixed(3)}`);
+            globalRevealingness += revealAdd * activity.expected_duration;
+            log(`Revealingness increased by ${revealAdd.toFixed(3)} → Total: ${globalRevealingness.toFixed(3)}`);
 
             const cost = activity.expected_duration * activity.monetary_cost_per_day * activity.people_required;
             totalCost += cost;
-            
+
             availablePeople -= activity.people_required;
 
             inProgress.push(activity);
@@ -120,34 +125,30 @@ function simulateStep(toDo) {
 
 function simulateProject(schedule) {
     const toDo = [...schedule];
-    while (toDo.length > 0 || inProgress.length > 0) {
-        let blocked 
-        toDo.every(a => {
-                if(a.start > currentTime ||
-                    a.people_required > availablePeople ||
-                    !a.dependencies.every(depId => done.some(d => d.id === depId))){
-                    blocked = true;
-                    failingActivity = a;
-                }
+    let deadlockCounter = 0; // Track consecutive blocked steps
+    const maxDeadlockSteps = 20; // Allow some steps to resolve deadlock
 
+    while (toDo.length > 0 || inProgress.length > 0) {
+        let blocked = false;
+        toDo.every(a => {
+            if (a.start > currentTime ||
+                a.people_required > availablePeople ||
+                !a.dependencies.every(depId => done.some(d => d.id === depId))) {
+                blocked = true;
+                failingActivity = a;
             }
-        );
-    
+        });
+
         if (blocked && inProgress.length === 0) {
-            //log("Deadlock: Remaining activities are blocked.");
-            
-            toDo.every(a => {
-                unfinishedActivities.push(a.id)
-            })
-            for (let i = toDo.length - 1; i >= 0; i--) {
-                const activity = toDo[i];
-                const dependenciesMet = activity.dependencies.every(depId =>
-                done.some(d => d.id === depId)
-                );
+            deadlockCounter++;
+            if (deadlockCounter >= maxDeadlockSteps) {
+                toDo.forEach(a => unfinishedActivities.push(a.id));
+                return false; // Declare deadlock after max steps
             }
-            return false;
+        } else {
+            deadlockCounter = 0; // Reset counter if progress is made
         }
-        
+
         simulateStep(toDo);
     }
     return true;
@@ -155,7 +156,7 @@ function simulateProject(schedule) {
 
 function printFinalResult(projectFinished) {
     totalProjectDuration = currentTime - 0;
-    totalCost = totalCost + (totalProjectDuration*baseCostPerDay);
+    totalCost = totalCost + (totalProjectDuration * baseCostPerDay);
     total = CompletionReward - totalCost;
     const result = {
         totalCost: Math.round(totalCost),
@@ -177,7 +178,7 @@ function printFinalResult(projectFinished) {
 }
 
 // ======= MAIN =========
-function getSchedule(){
+function getSchedule() {
     // Path to your schedule JSON
     const jsonOutputPath = path.resolve(__dirname, inputFile);
 
@@ -194,9 +195,9 @@ function getSchedule(){
 }
 const schedule = getSchedule();
 let amountOfLoops = 1000;
-batchSize=100
-fs.writeFile(outputFile,"", function(err, result) {
-    if(err) console.log('error', err);
+batchSize = 100
+fs.writeFile(outputFile, "", function (err, result) {
+    if (err) console.log('error', err);
 });
 // Initialize file
 fs.writeFileSync(outputFile, "[\n");
