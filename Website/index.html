@@ -61,8 +61,15 @@
     }
 
     google.charts.setOnLoadCallback(() => {
-      drawChartFromJson('./data/schedule_pert.json', 'gantt_chart_pert');
-      drawChartFromJson('./data/schedule_kart.json', 'gantt_chart_kart');
+      drawChartFromJson('./data/v2/schedules/rcp_8_people.json', 'rcp_8_people');
+      drawChartFromJson('./data/v2/schedules/kart_8_people_conservative.json', 'kart_8_people_conservative');
+      drawChartFromJson('./data/v2/schedules/kart_8_people_balanced.json', 'kart_8_people_balanced');
+      drawChartFromJson('./data/v2/schedules/kart_8_people_aggressive.json', 'kart_8_people_aggressive');
+      
+      drawChartFromJson('./data/v2/schedules/rcp_6_people.json', 'rcp_6_people');
+      drawChartFromJson('./data/v2/schedules/kart_6_people_conservative.json', 'kart_6_people_conservative');
+      drawChartFromJson('./data/v2/schedules/kart_6_people_balanced.json', 'kart_6_people_balanced');
+      drawChartFromJson('./data/v2/schedules/kart_6_people_aggressive.json', 'kart_6_people_aggressive');
     });
 
   </script>
@@ -92,13 +99,38 @@
 </head>
 
 <body>
-  <h1>PERT Gantt Chart</h1>
-  <div id="gantt_chart_pert" class="gantt_chart"></div>
-  <div id="total_cost_gantt_chart_pert" class="totalCost"></div>
+  <h1>RCP Gantt Chart - 8 People</h1>
+  <div id="rcp_8_people" class="gantt_chart"></div>
+  <div id="total_cost_rcp_8_people" class="totalCost"></div>
 
-  <h1>KART Gantt Chart</h1>
-  <div id="gantt_chart_kart" class="gantt_chart"></div>
-  <div id="total_cost_gantt_chart_kart" class="totalCost"></div>
+  <h1>KART Gantt Chart (Conservative) - 8 People</h1>
+  <div id="kart_8_people_conservative" class="gantt_chart"></div>
+  <div id="total_cost_kart_8_people_conservative" class="totalCost"></div>
+
+  <h1>KART Gantt Chart (Balanced) - 8 People</h1>
+  <div id="kart_8_people_balanced" class="gantt_chart"></div>
+  <div id="total_cost_kart_8_people_balanced" class="totalCost"></div>
+
+  <h1>KART Gantt Chart (Aggressive) - 8 People</h1>
+  <div id="kart_8_people_aggressive" class="gantt_chart"></div>
+  <div id="total_cost_kart_8_people_aggressive" class="totalCost"></div>
+
+
+  <h1>RCP Gantt Chart - 6 People</h1>
+  <div id="rcp_6_people" class="gantt_chart"></div>
+  <div id="total_cost_rcp_6_people" class="totalCost"></div>
+
+  <h1>KART Gantt Chart (Conservative) - 6 People</h1>
+  <div id="kart_6_people_conservative" class="gantt_chart"></div>
+  <div id="total_cost_kart_6_people_conservative" class="totalCost"></div>
+
+  <h1>KART Gantt Chart (Balanced) - 6 People</h1>
+  <div id="kart_6_people_balanced" class="gantt_chart"></div>
+  <div id="total_cost_kart_6_people_balanced" class="totalCost"></div>
+
+  <h1>KART Gantt Chart (Aggressive) - 6 People</h1>
+  <div id="kart_6_people_aggressive" class="gantt_chart"></div>
+  <div id="total_cost_kart_6_people_aggressive" class="totalCost"></div>
 </body>
 
 </html>
