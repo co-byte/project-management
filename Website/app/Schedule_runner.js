@@ -49,7 +49,9 @@ function checkFinishedActivities() {
         const activity = inProgress[i];
         if (currentTime >= activity.end) {
             //log(`Finished ${activity.activity} at time ${currentTime}`);
-            activity.finishedAt = currentTime;
+            if(currentTime < activity.finishedAt){
+                activity.finishedAt = currentTime;
+            }
             done.push(activity);
             inProgress.splice(i, 1);
             availablePeople += activity.people_required;
@@ -83,7 +85,9 @@ function applyPossibleRevealingnessDecay(){
     let amountOfDaysPassed = currentTime - currentDecayTime;
     currentDecayTime = currentTime;
     //log(`Days of decay ${amountOfDaysPassed} with current revealingness ${globalRevealingness}, total decay loss ${decayFactor**amountOfDaysPassed}`)
-    globalRevealingness = globalRevealingness * (decayFactor**amountOfDaysPassed)
+    if(amountOfDaysPassed != 0 ){
+        globalRevealingness = globalRevealingness * (decayFactor**amountOfDaysPassed)
+    }
 }
 
 function applyRevealingnessDecay() {
@@ -143,11 +147,12 @@ function simulateProject(schedule) {
         toDo.every(a => {
                 if(a.start > currentTime ||
                     a.people_required > availablePeople ||
-                    !a.dependencies.every(depId => done.some(d => d.id === depId))){
+                    !a.dependencies.every(depId => done.some(d => d.id === depId) ||
+                    inProgress.length == 0
+                )){
                     blocked = true;
                     failingActivity = a;
                 }
-
             }
         );
     
