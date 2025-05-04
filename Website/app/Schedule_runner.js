@@ -1,12 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 
+dataDir = "C:/Users/cobev/OneDrive - UGent/2024_2025_Informatica/sem2/project_management/planning-application/project-management/Website/data/v2/"
+outputFile= dataDir + "/results/kartel/rcp_8_people.json"
+inputFile = dataDir + "/schedules/rcp_8_people.json"
+const decayFactor = 0.6;
+
+const TOTAL_PEOPLE = 8;
+
 const REVEALINGNESS_VALUES = {
-    1: 0.05,
-    2: 0.075,
-    3: 0.10,
-    4: 0.15,
-    5: 0.20
+    1: 0.001,
+    2: 0.005,
+    3: 0.01,
+    4: 0.05,
+    5: 0.1
 };
   
 const CHANCE_VALUES = {
@@ -17,15 +24,13 @@ const CHANCE_VALUES = {
     5: 0.30
 };
 let CompletionReward = 150000;
-let baseCostPerDay = 200;  
+let baseCostPerDay = 100;  
 let failingActivity;  
 let unfinishedActivities = [];
-const TOTAL_PEOPLE = 8;
 let availablePeople = TOTAL_PEOPLE;
 let globalRevealingness = 0;
 let currentTime = 0;
 let currentDecayTime = 0;
-let decayFactor = 0.6;
 let totalCost = 0;
 let totalDelayDays = 0;
 
@@ -36,10 +41,6 @@ let inProgress = [];
 
 let results =[];
 
-function log(...args) {
-    console.log(...args);
-}
-  
 function calculateEffectiveChance(base, scale) {
     return base * (1 + scale);
 }
@@ -82,27 +83,8 @@ function checkFinishedActivities() {
 function applyPossibleRevealingnessDecay(){
     let amountOfDaysPassed = currentTime - currentDecayTime;
     currentDecayTime = currentTime;
-    //log(`Days of decay ${amountOfDaysPassed} with current revealingness ${globalRevealingness}, total decay loss ${decayFactor**amountOfDaysPassed}`)
+    // log(`Days of decay ${amountOfDaysPassed} with current revealingness ${globalRevealingness}, total decay loss ${decayFactor**amountOfDaysPassed}`)
     globalRevealingness = globalRevealingness * (decayFactor**amountOfDaysPassed)
-}
-
-function applyRevealingnessDecay() {
-    for (const activity of done) {
-        const revealVal = REVEALINGNESS_VALUES[activity.level_of_revealingness];
-        const timeSinceEnd = currentTime - activity.finishedAt;
-
-        if (!activity.revealDecay50 && timeSinceEnd >= activity.expected_duration * 0.5) {
-        globalRevealingness -= revealVal * 0.5;
-        activity.revealDecay50 = true;
-        //log(`Partial decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
-        }
-
-        if (!activity.revealDecay100 && timeSinceEnd >= activity.expected_duration * 0.75) {
-        globalRevealingness -= revealVal * 0.5;
-        activity.revealDecay100 = true;
-        //log(`Full decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
-        }
-    }
 }
 
 function startEligibleActivities(toDo) {
@@ -115,7 +97,7 @@ function startEligibleActivities(toDo) {
         if (activity.start <= currentTime && dependenciesMet && availablePeople >= activity.people_required) {
             //log(`Starting ${activity.activity} at time ${currentTime}`);
             const revealAdd = REVEALINGNESS_VALUES[activity.level_of_revealingness] || 0;
-            globalRevealingness += revealAdd;
+            globalRevealingness += revealAdd*activity.expected_duration;
             //log(`Revealingness increased by ${revealAdd.toFixed(3)} → Total: ${globalRevealingness.toFixed(3)}`);
 
             const cost = activity.expected_duration * activity.monetary_cost_per_day * activity.people_required;
@@ -194,8 +176,6 @@ function printFinalResult(projectFinished) {
     return result;
 }
 
-outputFile="../data/underground_60Decay_KART_results.json"
-inputFile = "../data/schedules/underground_schedule_kart.json"
 // ======= MAIN =========
 function getSchedule(){
     // Path to your schedule JSON
@@ -227,7 +207,6 @@ for (let i = 0; i < amountOfLoops; i++) {
     globalRevealingness = 0;
     currentTime = 0;
     currentDecayTime = 0;
-    decayFactor = 0.90;
     totalCost = 0;
     totalDelayDays = 0;
 

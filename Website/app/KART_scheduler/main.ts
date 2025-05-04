@@ -12,17 +12,17 @@ import { Activity } from "../entities/activity";
 import { ScheduledActivity } from "../entities/scheduled-activity";
 
 // === Constants ===
-const csvInputPath = "./Website/data/underground_cyber-surveillance_operation.csv";
-const jsonOutputPath = "./Website/data/schedule_kart.json";
+const csvInputPath = "./Website/data/input.csv";
+const jsonOutputPath = "./Website/data/v2/schedules/kart_6_people_conservative.json";
 
 const totalPeople = 6;                  // The amount of people available at the start of the project
 const dailyProjectCost = 100;           // Daily project cost (in dollars)
 const expectedProjectDuration = 90;     // Expected project duration (in days)
 const initialResourceWeight = 2;        // Initial resource weight
 const initialRevealingnessWeight = 2;   // Initial revealingness weight
-const softMaximumOfRevealingness = 4;   // Soft maximum of revealingness
-const hardMaximumOfRevealingsness = 10;  // Hard maximum of revealingness
-const revealingnessDecayRate = 0.35;     // Revealingness decay rate
+const softMaximumOfRevealingness = 3;   // Soft maximum of revealingness
+const hardMaximumOfRevealingsness = 6;  // Hard maximum of revealingness
+const revealingnessDecayRate = 0.75;    // Revealingness decay rate
 const startTimeSlot = 0;                // Start time slot
 const startRevealingness = 0;           // Start revealingness
 

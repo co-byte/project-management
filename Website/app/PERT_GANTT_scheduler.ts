@@ -3,7 +3,8 @@ import { Graph, Edge } from "graphlib";
 import { lastValueFrom } from "rxjs";
 import * as fs from "fs"; // Node.js file system for saving the JSON output
 
-const jsonOutputPath = "./Website/data/schedule_pert.json"; // Path to save the JSON output
+const jsonOutputPath = "./Website/data/v2/schedules/rcp_6_people.json"; // Path to save the JSON output
+const totalPeople = 6; // CHANGE this to simulate constraints
 
 interface Activity {
   id: string;
@@ -86,7 +87,8 @@ function topologicalSort(graph: Graph): string[] {
 // === Resource-Constrained Scheduling with Cost Tracking ===
 function scheduleActivities(
   graph: Graph,
-  totalPeople: number
+  totalPeople: number,
+  projectCostPerDay: number
 ): { schedule: ScheduledActivity[]; totalCost: number } {
   const sorted = topologicalSort(graph);
   const schedule: ScheduledActivity[] = [];
@@ -136,7 +138,12 @@ function scheduleActivities(
     activityMap[nodeId] = scheduled;
   }
 
-  const totalCost = timeSlots.reduce((sum, t) => sum + t.cost, 0);
+  // let totalCost = timeSlots.reduce((sum, t) => sum + t.cost, 0);
+  let totalCost = 0;
+  for (const timeslot in timeSlots) {
+    totalCost += projectCostPerDay;
+    totalCost += timeSlots[timeslot].cost;
+  }
 
   return { schedule, totalCost };
 }
@@ -177,8 +184,7 @@ function scheduleActivities(
 
   const graph = buildGraph(activities);
 
-  const totalPeople = 4; // CHANGE this to simulate constraints
-  const { schedule, totalCost } = scheduleActivities(graph, totalPeople);
+  const { schedule, totalCost } = scheduleActivities(graph, totalPeople, 100);
 
   console.log(`\n📊 Gantt Schedule (Max ${totalPeople} People):`);
   schedule.forEach((act) => {

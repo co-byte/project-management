@@ -255,8 +255,6 @@ export function scheduleActivities(
           // Update the total cost based on the activity's monetary cost per day
           totalCost += activity.monetary_cost_per_day;
         }
-
-        // Update the revealingness of the activity
       }
     });
 
