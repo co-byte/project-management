@@ -16,13 +16,16 @@ const CHANCE_VALUES = {
     4: 0.225,
     5: 0.30
 };
-  
+let CompletionReward = 150000;
+let baseCostPerDay = 200;  
+let failingActivity;  
+let unfinishedActivities = [];
 const TOTAL_PEOPLE = 8;
 let availablePeople = TOTAL_PEOPLE;
 let globalRevealingness = 0;
 let currentTime = 0;
 let currentDecayTime = 0;
-let decayFactor = 0.90;
+let decayFactor = 0.6;
 let totalCost = 0;
 let totalDelayDays = 0;
 
@@ -45,7 +48,7 @@ function checkFinishedActivities() {
     for (let i = inProgress.length - 1; i >= 0; i--) {
         const activity = inProgress[i];
         if (currentTime >= activity.end) {
-            log(`Finished ${activity.activity} at time ${currentTime}`);
+            //log(`Finished ${activity.activity} at time ${currentTime}`);
             activity.finishedAt = currentTime;
             done.push(activity);
             inProgress.splice(i, 1);
@@ -60,13 +63,13 @@ function checkFinishedActivities() {
                 const delayCost = activity.weight_of_delays * activity.monetary_cost_per_day * activity.people_required;
                 totalCost += delayCost;
                 delays.push({ activity: activity.id, revealingnessFactor: globalRevealingness.toFixed(3) });
-                log(`Delay in ${activity.activity} (Chance: ${(delayChance * 100).toFixed(1)}%)`);
+                //log(`Delay in ${activity.activity} (Chance: ${(delayChance * 100).toFixed(1)}%)`);
             }
 
             if (Math.random() < peopleLossChance) {
                 availablePeople -= activity.weight_of_losing_people;
                 peopleLost.push({ activity: activity.id, revealingnessFactor: globalRevealingness.toFixed(3) });
-                log(`Lost ${activity.weight_of_losing_people} people in ${activity.activity} (Chance: ${(peopleLossChance * 100).toFixed(1)}%)`);
+                //log(`Lost ${activity.weight_of_losing_people} people in ${activity.activity} (Chance: ${(peopleLossChance * 100).toFixed(1)}%)`);
                 if (availablePeople < 0) availablePeople = 0;
             }
 
@@ -79,7 +82,7 @@ function checkFinishedActivities() {
 function applyPossibleRevealingnessDecay(){
     let amountOfDaysPassed = currentTime - currentDecayTime;
     currentDecayTime = currentTime;
-    log(`Days of decay ${amountOfDaysPassed} with current revealingness ${globalRevealingness}, total decay loss ${decayFactor**amountOfDaysPassed}`)
+    //log(`Days of decay ${amountOfDaysPassed} with current revealingness ${globalRevealingness}, total decay loss ${decayFactor**amountOfDaysPassed}`)
     globalRevealingness = globalRevealingness * (decayFactor**amountOfDaysPassed)
 }
 
@@ -91,13 +94,13 @@ function applyRevealingnessDecay() {
         if (!activity.revealDecay50 && timeSinceEnd >= activity.expected_duration * 0.5) {
         globalRevealingness -= revealVal * 0.5;
         activity.revealDecay50 = true;
-        log(`Partial decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
+        //log(`Partial decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
         }
 
         if (!activity.revealDecay100 && timeSinceEnd >= activity.expected_duration * 0.75) {
         globalRevealingness -= revealVal * 0.5;
         activity.revealDecay100 = true;
-        log(`Full decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
+        //log(`Full decay from ${activity.activity}: -${(revealVal * 0.5).toFixed(3)}`);
         }
     }
 }
@@ -110,10 +113,10 @@ function startEligibleActivities(toDo) {
         );
 
         if (activity.start <= currentTime && dependenciesMet && availablePeople >= activity.people_required) {
-            log(`Starting ${activity.activity} at time ${currentTime}`);
+            //log(`Starting ${activity.activity} at time ${currentTime}`);
             const revealAdd = REVEALINGNESS_VALUES[activity.level_of_revealingness] || 0;
             globalRevealingness += revealAdd;
-            log(`Revealingness increased by ${revealAdd.toFixed(3)} → Total: ${globalRevealingness.toFixed(3)}`);
+            //log(`Revealingness increased by ${revealAdd.toFixed(3)} → Total: ${globalRevealingness.toFixed(3)}`);
 
             const cost = activity.expected_duration * activity.monetary_cost_per_day * activity.people_required;
             totalCost += cost;
@@ -136,14 +139,30 @@ function simulateStep(toDo) {
 function simulateProject(schedule) {
     const toDo = [...schedule];
     while (toDo.length > 0 || inProgress.length > 0) {
-        const blocked = toDo.every(a =>
-            a.start > currentTime ||
-            a.people_required > availablePeople ||
-            !a.dependencies.every(depId => done.some(d => d.id === depId))
+        let blocked 
+        toDo.every(a => {
+                if(a.start > currentTime ||
+                    a.people_required > availablePeople ||
+                    !a.dependencies.every(depId => done.some(d => d.id === depId))){
+                    blocked = true;
+                    failingActivity = a;
+                }
+
+            }
         );
     
         if (blocked && inProgress.length === 0) {
-            log("Deadlock: Remaining activities are blocked.");
+            //log("Deadlock: Remaining activities are blocked.");
+            
+            toDo.every(a => {
+                unfinishedActivities.push(a.id)
+            })
+            for (let i = toDo.length - 1; i >= 0; i--) {
+                const activity = toDo[i];
+                const dependenciesMet = activity.dependencies.every(depId =>
+                done.some(d => d.id === depId)
+                );
+            }
             return false;
         }
         
@@ -153,6 +172,9 @@ function simulateProject(schedule) {
 }
 
 function printFinalResult(projectFinished) {
+    totalProjectDuration = currentTime - 0;
+    totalCost = totalCost + (totalProjectDuration*baseCostPerDay);
+    total = CompletionReward - totalCost;
     const result = {
         totalCost: Math.round(totalCost),
         totalDelayDays,
@@ -160,18 +182,24 @@ function printFinalResult(projectFinished) {
         delays,
         peopleLost,
         finishedActivities: done.map(a => a.id),
-        projectFinished
+        projectFinished,
+        unfinishedActivities,
+        failingActivity,
+        totalProjectDuration,
+        total
     };
 
-    console.log("\n FINAL RESULT:");
-    console.log(JSON.stringify(result, null, 2));
+    //log("\n FINAL RESULT:");
+    //log(JSON.stringify(result, null, 2));
     return result;
 }
-  
+
+outputFile="../data/underground_60Decay_KART_results.json"
+inputFile = "../data/schedules/underground_schedule_kart.json"
 // ======= MAIN =========
 function getSchedule(){
     // Path to your schedule JSON
-    const jsonOutputPath = path.resolve(__dirname, "../data/input_schedule_kart.json");
+    const jsonOutputPath = path.resolve(__dirname, inputFile);
 
     let schedule;
     try {
@@ -185,8 +213,15 @@ function getSchedule(){
     }
 }
 const schedule = getSchedule();
-let amountOfLoops = 50;
-for(let i = 0; i < amountOfLoops; i++){
+let amountOfLoops = 1000;
+batchSize=100
+fs.writeFile(outputFile,"", function(err, result) {
+    if(err) console.log('error', err);
+});
+// Initialize file
+fs.writeFileSync(outputFile, "[\n");
+
+for (let i = 0; i < amountOfLoops; i++) {
     let tempSchedule = JSON.parse(JSON.stringify(schedule));
     availablePeople = TOTAL_PEOPLE;
     globalRevealingness = 0;
@@ -195,15 +230,23 @@ for(let i = 0; i < amountOfLoops; i++){
     decayFactor = 0.90;
     totalCost = 0;
     totalDelayDays = 0;
-    
+
     delays = [];
     peopleLost = [];
     done = [];
     inProgress = [];
-    projectFinished = simulateProject(tempSchedule);
-    results.push(printFinalResult(projectFinished));
+    unfinishedActivities = [];
+    const projectFinished = simulateProject(tempSchedule);
+    const result = printFinalResult(projectFinished);
+    results.push(result);
+
+    // Append every 50 or on the last iteration
+    const isLastBatch = (i === amountOfLoops - 1);
+    if (results.length === batchSize || isLastBatch) {
+        const jsonChunk = results.map(r => JSON.stringify(r, null, 2)).join(",\n") + (isLastBatch ? "\n" : ",\n");
+        fs.appendFileSync(outputFile, jsonChunk);
+        results = []; // Clear buffer
+    }
 }
 
-fs.writeFile("../data/input_KART_results.json", JSON.stringify(results, null, 2), function(err, result) {
-    if(err) console.log('error', err);
-});
+fs.appendFileSync(outputFile, "]"); // Close JSON array
