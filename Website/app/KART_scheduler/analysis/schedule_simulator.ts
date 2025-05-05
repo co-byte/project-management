@@ -44,10 +44,10 @@ interface SimulationResult {
 interface RunSimulationOptions {
   inputFile: string;
   outputFile: string;
-  totalPeople?: number;
+  decayFactor: number;
+  totalPeople: number;
   amountOfLoops?: number;
   batchSize?: number;
-  decayFactor?: number;
   revealingnessValues?: RevealingnessValues;
   chanceValues?: ChanceValues;
   completionReward?: number;
@@ -57,10 +57,10 @@ interface RunSimulationOptions {
 export function runSimulation({
   inputFile,
   outputFile,
-  totalPeople = 8,
+  decayFactor,
+  totalPeople,
   amountOfLoops = 1000,
   batchSize = 100,
-  decayFactor = 0.9,
   revealingnessValues = {
     1: 0.05,
     2: 0.075,
