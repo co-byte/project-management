@@ -1,5 +1,5 @@
 {
-  "totalCost": 36900,
+  "totalCost": 36600,
   "schedule": [
     {
       "id": "ACT_1.1.1",
@@ -92,8 +92,8 @@
       "dependencies": [
         "ACT_2.1.1"
       ],
-      "start": 9,
-      "end": 13
+      "start": 8,
+      "end": 12
     },
     {
       "id": "ACT_1.2.3",
@@ -112,8 +112,8 @@
       "dependencies": [
         "ACT_1.1.2"
       ],
-      "start": 15,
-      "end": 19
+      "start": 14,
+      "end": 18
     },
     {
       "id": "ACT_1.2.2",
@@ -132,8 +132,8 @@
       "dependencies": [
         "ACT_1.1.2"
       ],
-      "start": 15,
-      "end": 18
+      "start": 14,
+      "end": 17
     },
     {
       "id": "ACT_2.3.1",
@@ -152,8 +152,8 @@
       "dependencies": [
         "ACT_1.2.2"
       ],
-      "start": 19,
-      "end": 24
+      "start": 18,
+      "end": 23
     },
     {
       "id": "ACT_2.1.3",
@@ -172,8 +172,8 @@
       "dependencies": [
         "ACT_2.1.2"
       ],
-      "start": 20,
-      "end": 23
+      "start": 19,
+      "end": 22
     },
     {
       "id": "ACT_3.1.1",
@@ -192,8 +192,8 @@
       "dependencies": [
         "ACT_2.3.1"
       ],
-      "start": 24,
-      "end": 28
+      "start": 23,
+      "end": 27
     },
     {
       "id": "ACT_2.2.1",
@@ -213,8 +213,8 @@
         "ACT_1.1.2",
         "ACT_2.1.3"
       ],
-      "start": 25,
-      "end": 27
+      "start": 24,
+      "end": 26
     },
     {
       "id": "ACT_2.3.2",
@@ -235,8 +235,8 @@
         "ACT_2.2.1",
         "ACT_2.3.1"
       ],
-      "start": 29,
-      "end": 32
+      "start": 28,
+      "end": 31
     },
     {
       "id": "ACT_2.3.3",
@@ -256,8 +256,8 @@
         "ACT_2.3.2",
         "ACT_3.1.1"
       ],
-      "start": 34,
-      "end": 36
+      "start": 32,
+      "end": 34
     },
     {
       "id": "ACT_1.2.1",
@@ -276,8 +276,8 @@
       "dependencies": [
         "ACT_1.1.2"
       ],
-      "start": 38,
-      "end": 43
+      "start": 36,
+      "end": 41
     },
     {
       "id": "ACT_3.1.2",
@@ -297,8 +297,8 @@
         "ACT_2.3.3",
         "ACT_1.2.1"
       ],
-      "start": 45,
-      "end": 60
+      "start": 43,
+      "end": 58
     },
     {
       "id": "ACT_3.2.1",
@@ -317,8 +317,8 @@
       "dependencies": [
         "ACT_3.1.2"
       ],
-      "start": 63,
-      "end": 65
+      "start": 60,
+      "end": 62
     },
     {
       "id": "ACT_4.1.2",
@@ -338,8 +338,8 @@
         "ACT_3.2.1",
         "ACT_4.1.1"
       ],
-      "start": 68,
-      "end": 70
+      "start": 65,
+      "end": 67
     },
     {
       "id": "ACT_4.2.1",
@@ -358,8 +358,8 @@
       "dependencies": [
         "ACT_4.1.2"
       ],
-      "start": 72,
-      "end": 75
+      "start": 69,
+      "end": 72
     },
     {
       "id": "ACT_4.2.2",
@@ -378,8 +378,8 @@
       "dependencies": [
         "ACT_4.1.2"
       ],
-      "start": 76,
-      "end": 82
+      "start": 73,
+      "end": 79
     }
   ]
 }

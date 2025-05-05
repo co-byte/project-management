@@ -1,5 +1,5 @@
 {
-  "totalCost": 57100,
+  "totalCost": 38000,
   "schedule": [
     {
       "id": "ACT_1.1.1",
@@ -38,6 +38,24 @@
       "end": 4
     },
     {
+      "id": "ACT_2.1.1",
+      "activity": "Identify_potential_producers",
+      "optimistic_duration": 2,
+      "likely_duration": 4,
+      "pessimistic_duration": 7,
+      "expected_duration": 4.166666666666667,
+      "people_required": 3,
+      "monetary_cost_per_day": 300,
+      "level_of_revealingness": 5,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 1,
+      "weight_of_losing_people": 2,
+      "dependencies": [],
+      "start": 0,
+      "end": 5
+    },
+    {
       "id": "ACT_1.1.2",
       "activity": "Set_up_offshore_accounts",
       "optimistic_duration": 3,
@@ -54,126 +72,8 @@
       "dependencies": [
         "ACT_1.1.1"
       ],
-      "start": 5,
-      "end": 11
-    },
-    {
-      "id": "ACT_1.2.3",
-      "activity": "Forge_transport_documents",
-      "optimistic_duration": 2,
-      "likely_duration": 3,
-      "pessimistic_duration": 5,
-      "expected_duration": 3.1666666666666665,
-      "people_required": 2,
-      "monetary_cost_per_day": 200,
-      "level_of_revealingness": 1,
-      "chance_of_delays": 1,
-      "weight_of_delays": 2,
-      "chance_of_losing_people": 5,
-      "weight_of_losing_people": 1,
-      "dependencies": [
-        "ACT_1.1.2"
-      ],
-      "start": 11,
-      "end": 15
-    },
-    {
-      "id": "ACT_1.2.2",
-      "activity": "Rent_warehouse_and_vehicles",
-      "optimistic_duration": 2,
-      "likely_duration": 3,
-      "pessimistic_duration": 4,
-      "expected_duration": 3,
-      "people_required": 3,
-      "monetary_cost_per_day": 250,
-      "level_of_revealingness": 2,
-      "chance_of_delays": 2,
-      "weight_of_delays": 3,
-      "chance_of_losing_people": 1,
-      "weight_of_losing_people": 2,
-      "dependencies": [
-        "ACT_1.1.2"
-      ],
-      "start": 16,
-      "end": 19
-    },
-    {
-      "id": "ACT_2.3.1",
-      "activity": "Acquire_freight_container_and_legit_cargo",
-      "optimistic_duration": 2,
-      "likely_duration": 4,
-      "pessimistic_duration": 8,
-      "expected_duration": 4.333333333333333,
-      "people_required": 2,
-      "monetary_cost_per_day": 300,
-      "level_of_revealingness": 1,
-      "chance_of_delays": 2,
-      "weight_of_delays": 3,
-      "chance_of_losing_people": 1,
-      "weight_of_losing_people": 2,
-      "dependencies": [
-        "ACT_1.2.2"
-      ],
-      "start": 21,
-      "end": 26
-    },
-    {
-      "id": "ACT_3.1.1",
-      "activity": "Set_up_GPS/satellite_tracking",
-      "optimistic_duration": 2,
-      "likely_duration": 3,
-      "pessimistic_duration": 5,
-      "expected_duration": 3.1666666666666665,
-      "people_required": 1,
-      "monetary_cost_per_day": 150,
-      "level_of_revealingness": 1,
-      "chance_of_delays": 1,
-      "weight_of_delays": 2,
-      "chance_of_losing_people": 5,
-      "weight_of_losing_people": 1,
-      "dependencies": [
-        "ACT_2.3.1"
-      ],
-      "start": 26,
-      "end": 30
-    },
-    {
-      "id": "ACT_1.2.1",
-      "activity": "Recruit_insiders_at_ports_(Santos_and_Antwerp)",
-      "optimistic_duration": 2,
-      "likely_duration": 4,
-      "pessimistic_duration": 7,
-      "expected_duration": 4.166666666666667,
-      "people_required": 4,
-      "monetary_cost_per_day": 400,
-      "level_of_revealingness": 5,
-      "chance_of_delays": 3,
-      "weight_of_delays": 4,
-      "chance_of_losing_people": 15,
-      "weight_of_losing_people": 25,
-      "dependencies": [
-        "ACT_1.1.2"
-      ],
-      "start": 36,
-      "end": 41
-    },
-    {
-      "id": "ACT_2.1.1",
-      "activity": "Identify_potential_producers",
-      "optimistic_duration": 2,
-      "likely_duration": 4,
-      "pessimistic_duration": 7,
-      "expected_duration": 4.166666666666667,
-      "people_required": 3,
-      "monetary_cost_per_day": 300,
-      "level_of_revealingness": 5,
-      "chance_of_delays": 2,
-      "weight_of_delays": 3,
-      "chance_of_losing_people": 1,
-      "weight_of_losing_people": 2,
-      "dependencies": [],
-      "start": 51,
-      "end": 56
+      "start": 8,
+      "end": 14
     },
     {
       "id": "ACT_2.1.2",
@@ -192,8 +92,68 @@
       "dependencies": [
         "ACT_2.1.1"
       ],
-      "start": 64,
-      "end": 68
+      "start": 11,
+      "end": 15
+    },
+    {
+      "id": "ACT_1.2.3",
+      "activity": "Forge_transport_documents",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 2,
+      "monetary_cost_per_day": 200,
+      "level_of_revealingness": 1,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 5,
+      "weight_of_losing_people": 1,
+      "dependencies": [
+        "ACT_1.1.2"
+      ],
+      "start": 17,
+      "end": 21
+    },
+    {
+      "id": "ACT_1.2.2",
+      "activity": "Rent_warehouse_and_vehicles",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 4,
+      "expected_duration": 3,
+      "people_required": 3,
+      "monetary_cost_per_day": 250,
+      "level_of_revealingness": 2,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 1,
+      "weight_of_losing_people": 2,
+      "dependencies": [
+        "ACT_1.1.2"
+      ],
+      "start": 18,
+      "end": 21
+    },
+    {
+      "id": "ACT_2.3.1",
+      "activity": "Acquire_freight_container_and_legit_cargo",
+      "optimistic_duration": 2,
+      "likely_duration": 4,
+      "pessimistic_duration": 8,
+      "expected_duration": 4.333333333333333,
+      "people_required": 2,
+      "monetary_cost_per_day": 300,
+      "level_of_revealingness": 1,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 1,
+      "weight_of_losing_people": 2,
+      "dependencies": [
+        "ACT_1.2.2"
+      ],
+      "start": 22,
+      "end": 27
     },
     {
       "id": "ACT_2.1.3",
@@ -212,8 +172,28 @@
       "dependencies": [
         "ACT_2.1.2"
       ],
-      "start": 74,
-      "end": 77
+      "start": 24,
+      "end": 27
+    },
+    {
+      "id": "ACT_3.1.1",
+      "activity": "Set_up_GPS/satellite_tracking",
+      "optimistic_duration": 2,
+      "likely_duration": 3,
+      "pessimistic_duration": 5,
+      "expected_duration": 3.1666666666666665,
+      "people_required": 1,
+      "monetary_cost_per_day": 150,
+      "level_of_revealingness": 1,
+      "chance_of_delays": 1,
+      "weight_of_delays": 2,
+      "chance_of_losing_people": 5,
+      "weight_of_losing_people": 1,
+      "dependencies": [
+        "ACT_2.3.1"
+      ],
+      "start": 29,
+      "end": 33
     },
     {
       "id": "ACT_2.2.1",
@@ -233,8 +213,8 @@
         "ACT_1.1.2",
         "ACT_2.1.3"
       ],
-      "start": 80,
-      "end": 82
+      "start": 29,
+      "end": 31
     },
     {
       "id": "ACT_2.3.2",
@@ -255,8 +235,8 @@
         "ACT_2.2.1",
         "ACT_2.3.1"
       ],
-      "start": 87,
-      "end": 90
+      "start": 34,
+      "end": 37
     },
     {
       "id": "ACT_2.3.3",
@@ -276,8 +256,28 @@
         "ACT_2.3.2",
         "ACT_3.1.1"
       ],
-      "start": 95,
-      "end": 97
+      "start": 39,
+      "end": 41
+    },
+    {
+      "id": "ACT_1.2.1",
+      "activity": "Recruit_insiders_at_ports_(Santos_and_Antwerp)",
+      "optimistic_duration": 2,
+      "likely_duration": 4,
+      "pessimistic_duration": 7,
+      "expected_duration": 4.166666666666667,
+      "people_required": 4,
+      "monetary_cost_per_day": 400,
+      "level_of_revealingness": 5,
+      "chance_of_delays": 3,
+      "weight_of_delays": 4,
+      "chance_of_losing_people": 15,
+      "weight_of_losing_people": 25,
+      "dependencies": [
+        "ACT_1.1.2"
+      ],
+      "start": 44,
+      "end": 49
     },
     {
       "id": "ACT_3.1.2",
@@ -297,8 +297,8 @@
         "ACT_2.3.3",
         "ACT_1.2.1"
       ],
-      "start": 101,
-      "end": 116
+      "start": 52,
+      "end": 67
     },
     {
       "id": "ACT_3.2.1",
@@ -317,8 +317,8 @@
       "dependencies": [
         "ACT_3.1.2"
       ],
-      "start": 248,
-      "end": 250
+      "start": 71,
+      "end": 73
     },
     {
       "id": "ACT_4.1.2",
@@ -338,28 +338,8 @@
         "ACT_3.2.1",
         "ACT_4.1.1"
       ],
-      "start": 260,
-      "end": 262
-    },
-    {
-      "id": "ACT_4.2.2",
-      "activity": "Money_laundering",
-      "optimistic_duration": 3,
-      "likely_duration": 5,
-      "pessimistic_duration": 8,
-      "expected_duration": 5.166666666666667,
-      "people_required": 2,
-      "monetary_cost_per_day": 300,
-      "level_of_revealingness": 3,
-      "chance_of_delays": 2,
-      "weight_of_delays": 3,
-      "chance_of_losing_people": 1,
-      "weight_of_losing_people": 2,
-      "dependencies": [
-        "ACT_4.1.2"
-      ],
-      "start": 267,
-      "end": 273
+      "start": 77,
+      "end": 79
     },
     {
       "id": "ACT_4.2.1",
@@ -378,8 +358,28 @@
       "dependencies": [
         "ACT_4.1.2"
       ],
-      "start": 278,
-      "end": 281
+      "start": 82,
+      "end": 85
+    },
+    {
+      "id": "ACT_4.2.2",
+      "activity": "Money_laundering",
+      "optimistic_duration": 3,
+      "likely_duration": 5,
+      "pessimistic_duration": 8,
+      "expected_duration": 5.166666666666667,
+      "people_required": 2,
+      "monetary_cost_per_day": 300,
+      "level_of_revealingness": 3,
+      "chance_of_delays": 2,
+      "weight_of_delays": 3,
+      "chance_of_losing_people": 1,
+      "weight_of_losing_people": 2,
+      "dependencies": [
+        "ACT_4.1.2"
+      ],
+      "start": 87,
+      "end": 93
     }
   ]
 }

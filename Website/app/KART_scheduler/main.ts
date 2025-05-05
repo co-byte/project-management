@@ -11,27 +11,25 @@ import {
 import { Activity } from "../entities/activity";
 import { ScheduledActivity } from "../entities/scheduled-activity";
 
-// === Constants ===
-const csvInputPath = "./Website/data/input.csv";
-const jsonOutputPath = "./Website/data/v2/schedules/kart_6_people_conservative.json";
-
-const totalPeople = 6;                  // The amount of people available at the start of the project
-const dailyProjectCost = 100;           // Daily project cost (in dollars)
-const expectedProjectDuration = 90;     // Expected project duration (in days)
-const initialResourceWeight = 2;        // Initial resource weight
-const initialRevealingnessWeight = 2;   // Initial revealingness weight
-const softMaximumOfRevealingness = 3;   // Soft maximum of revealingness
-const hardMaximumOfRevealingsness = 6;  // Hard maximum of revealingness
-const revealingnessDecayRate = 0.75;    // Revealingness decay rate
-const startTimeSlot = 0;                // Start time slot
-const startRevealingness = 0;           // Start revealingness
-
 // === Main Function ===
-(async () => {
-  console.log(`\n📊 Gantt Schedule (Max ${totalPeople} People):`);
+export async function runScheduleWithParameters(config: {
+  csvInputPath: string;
+  jsonOutputPath: string;
+  totalPeople: number;
+  dailyProjectCost: number;
+  expectedProjectDuration: number;
+  initialResourceWeight: number;
+  initialRevealingnessWeight: number;
+  softMaximumOfRevealingness: number;
+  hardMaximumOfRevealingsness: number;
+  revealingnessDecayRate: number;
+  startTimeSlot: number;
+  startRevealingness: number;
+}) {
+  // console.log(`\n📊 Gantt Schedule (Max ${config.totalPeople} People):`);
 
   // Prepare the data
-  const rows = await lastValueFrom(ingestCSV(csvInputPath));
+  const rows = await lastValueFrom(ingestCSV(config.csvInputPath));
   const dependencies = calculateDependencies(rows);
   const activities: Activity[] = calculateActivities(rows, dependencies);
   const graph = buildGraph(activities);
@@ -39,31 +37,31 @@ const startRevealingness = 0;           // Start revealingness
   // Schedule the activities
   const { schedule, totalCost } = scheduleActivities(
     graph,
-    totalPeople,
-    dailyProjectCost,
-    expectedProjectDuration,
-    initialResourceWeight,
-    initialRevealingnessWeight,
-    softMaximumOfRevealingness,
-    hardMaximumOfRevealingsness,
-    revealingnessDecayRate,
-    startTimeSlot,
-    startRevealingness,
+    config.totalPeople,
+    config.dailyProjectCost,
+    config.expectedProjectDuration,
+    config.initialResourceWeight,
+    config.initialRevealingnessWeight,
+    config.softMaximumOfRevealingness,
+    config.hardMaximumOfRevealingsness,
+    config.revealingnessDecayRate,
+    config.startTimeSlot,
+    config.startRevealingness,
   );
 
   // Print the schedule
-  schedule.forEach((activity: ScheduledActivity) => {
-    console.log(
-      `- ${activity.id.padEnd(10)} | ${activity.activity.padEnd(
-        30
-      )} | Start: ${activity.activityStartTime.toFixed(
-        0
-      )} | End: ${activity.activityEndTime.toFixed(0)} | Cost: $${(
-        activity.monetary_cost_per_day * activity.expected_duration
-      ).toFixed(2)}`
-    );
-  });
-  console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
+  // schedule.forEach((activity: ScheduledActivity) => {
+  //   console.log(
+  //     `- ${activity.id.padEnd(10)} | ${activity.activity.padEnd(
+  //       30
+  //     )} | Start: ${activity.activityStartTime.toFixed(
+  //       0
+  //     )} | End: ${activity.activityEndTime.toFixed(0)} | Cost: $${(
+  //       activity.monetary_cost_per_day * activity.expected_duration
+  //     ).toFixed(2)}`
+  //   );
+  // });
+  // console.log(`\n💰 Total Accumulated Project Cost: $${totalCost.toFixed(2)}`);
 
   // Dirty fix to transform the schedule names to match the field names as defined in PERT
   const transformedSchedule = schedule.map((activity) => ({
@@ -79,7 +77,7 @@ const startRevealingness = 0;           // Start revealingness
     totalCost: totalCost,
     schedule: transformedSchedule,
   };
-  fs.writeFileSync(jsonOutputPath, JSON.stringify(output, null, 2));
+  fs.writeFileSync(config.jsonOutputPath, JSON.stringify(output, null, 2));
 
-  console.log("Schedule has been saved to ", jsonOutputPath);
-})();
+  console.log("Schedule has been saved to ", config.jsonOutputPath);
+};

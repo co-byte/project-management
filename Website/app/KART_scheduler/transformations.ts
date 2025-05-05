@@ -193,7 +193,7 @@ export function scheduleActivities(
     ).toArray();
 
     if (orderedActivities.length === 0) {
-      console.debug("ScheduleActivities - Scheduling completed.");
+      // console.debug("ScheduleActivities - Scheduling completed.");
       break; // Exit loop
     }
 
@@ -337,8 +337,8 @@ function activityCanBeScheduled(
     return false; // Dependency is not yet completed
   }
 
-  console.debug(
-    `activityCanBeScheduled - Activity '${activity.activity.trim()}' can be scheduled at time slot ${currentTimeSlot}.`
-  );
+  // console.debug(
+  //   `activityCanBeScheduled - Activity '${activity.activity.trim()}' can be scheduled at time slot ${currentTimeSlot}.`
+  // );
   return true; // Activity can be scheduled
 }

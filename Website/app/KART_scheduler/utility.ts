@@ -83,9 +83,9 @@ export function buildGraph(activities: Activity[]): Graph {
     });
   });
 
-  console.debug("buildGraph - Graph nodes:");
-  g.nodes().forEach((node) => {
-    console.debug(" - ",node, "activity='",g.node(node).activity.trim(), "'\t| revealingness=",g.node(node).level_of_revealingness), " | ...";
-  });
+  // console.debug("buildGraph - Graph nodes:");
+  // g.nodes().forEach((node) => {
+  //   console.debug(" - ",node, "activity='",g.node(node).activity.trim(), "'\t| revealingness=",g.node(node).level_of_revealingness), " | ...";
+  // });
   return g;
 }
