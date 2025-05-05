@@ -163,6 +163,7 @@ export function runSimulation({
     let daysPassed = currentTime - currentDecayTime;
     if (daysPassed !== 0) {
       globalRevealingness -= decayFactor * daysPassed;
+      if (globalRevealingness < 0) globalRevealingness = 0;
       currentDecayTime = currentTime;
     }
   }

@@ -98,12 +98,14 @@ const Configs = [
     startTimeSlot: 0,
     startRevealingness: 0,
   },
+  // === RCP 6 People ===
   {
     name: "rcp_6_people",
     jsonOutputPath: "./Website/data/v2/schedules/rcp_6_people.json",
     totalPeople: 6,
     dailyProjectCost: 100,
   },
+  // === RCP 8 People ===
   {
     name: "rcp_8_people",
     jsonOutputPath: "./Website/data/v2/schedules/rcp_8_people.json",
