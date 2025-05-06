@@ -46,7 +46,7 @@ interface RunSimulationOptions {
   outputFile: string;
   decayFactor: number;
   totalPeople: number;
-  amountOfLoops?: number;
+  amountOfLoops: number;
   batchSize?: number;
   revealingnessValues?: RevealingnessValues;
   chanceValues?: ChanceValues;
@@ -59,8 +59,8 @@ export function runSimulation({
   outputFile,
   decayFactor,
   totalPeople,
-  amountOfLoops = 1000,
-  batchSize = 100,
+  amountOfLoops,
+  batchSize = 10,
   revealingnessValues = {
     1: 0.05,
     2: 0.075,
@@ -69,11 +69,11 @@ export function runSimulation({
     5: 0.2,
   },
   chanceValues = {
-    1: 0.05,
-    2: 0.1,
-    3: 0.15,
-    4: 0.225,
-    5: 0.3,
+    1: 0.033,
+    2: 0.666,
+    3: 0.10,
+    4: 0.15,
+    5: 0.2,
   },
   completionReward = 150000,
   baseCostPerDay = 200,
@@ -115,13 +115,16 @@ export function runSimulation({
   function checkFinishedActivities(): void {
     for (let i = inProgress.length - 1; i >= 0; i--) {
       const activity = inProgress[i];
-      if (currentTime >= (activity.end ?? (activity.end = currentTime + activity.expected_duration))) {
+      if (
+        currentTime >=
+        (activity.end ??
+          (activity.end = currentTime + activity.expected_duration))
+      ) {
         if (currentTime < (activity.finishedAt ?? currentTime))
           activity.finishedAt = currentTime;
         done.push(activity);
         inProgress.splice(i, 1);
         availablePeople += activity.people_required;
-        applyRevealingnessDecay();
 
         const delayChance = calculateEffectiveChance(
           chanceValues[activity.chance_of_delays],
@@ -145,7 +148,7 @@ export function runSimulation({
         }
 
         if (Math.random() < peopleLossChance) {
-          availablePeople -= activity.weight_of_losing_people;
+          availablePeople -= 1;
           peopleLost.push({
             activity: activity.id,
             revealingnessFactor: globalRevealingness.toFixed(3),
@@ -167,6 +170,30 @@ export function runSimulation({
       currentDecayTime = currentTime;
     }
   }
+  // function applyRevealingnessDecay() {
+  //   for (const activity of done) {
+  //     if (activity.finishedAt === undefined) continue; // Skip if finishedAt is not set
+
+  //     const revealVal = revealingnessValues[activity.level_of_revealingness];
+  //     const timeSinceEnd = currentTime - activity.finishedAt;
+
+  //     if (
+  //       !activity.revealDecay50 &&
+  //       timeSinceEnd >= activity.expected_duration * 0.5
+  //     ) {
+  //       globalRevealingness -= revealVal * 0.5;
+  //       activity.revealDecay50 = true;
+  //     }
+
+  //     if (
+  //       !activity.revealDecay100 &&
+  //       timeSinceEnd >= activity.expected_duration * 0.75
+  //     ) {
+  //       globalRevealingness -= revealVal * 0.5;
+  //       activity.revealDecay100 = true;
+  //     }
+  //   }
+  // }
 
   function startEligibleActivities(toDo: Activity[]): void {
     for (let i = toDo.length - 1; i >= 0; i--) {
@@ -194,6 +221,7 @@ export function runSimulation({
   }
 
   function simulateStep(toDo: Activity[]): void {
+    applyRevealingnessDecay();
     checkFinishedActivities();
     startEligibleActivities(toDo);
     currentTime += 1;

@@ -55,7 +55,8 @@ function checkFinishedActivities() {
             done.push(activity);
             inProgress.splice(i, 1);
             availablePeople += activity.people_required;
-            applyPossibleRevealingnessDecay()
+            // applyPossibleRevealingnessDecay()
+            applyRevealingnessDecay();
 
             const delayChance = calculateEffectiveChance(CHANCE_VALUES[activity.chance_of_delays], globalRevealingness);
             const peopleLossChance = calculateEffectiveChance(CHANCE_VALUES[activity.chance_of_losing_people], globalRevealingness);
