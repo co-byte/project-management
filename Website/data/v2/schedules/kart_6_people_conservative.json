@@ -1,5 +1,5 @@
 {
-  "totalCost": 46800,
+  "totalCost": 48400,
   "schedule": [
     {
       "id": "A",
@@ -92,8 +92,8 @@
       "dependencies": [
         "F"
       ],
-      "start": 11,
-      "end": 15
+      "start": 13,
+      "end": 17
     },
     {
       "id": "E",
@@ -112,8 +112,8 @@
       "dependencies": [
         "B"
       ],
-      "start": 17,
-      "end": 21
+      "start": 19,
+      "end": 23
     },
     {
       "id": "D",
@@ -132,8 +132,8 @@
       "dependencies": [
         "B"
       ],
-      "start": 18,
-      "end": 21
+      "start": 20,
+      "end": 23
     },
     {
       "id": "J",
@@ -152,8 +152,8 @@
       "dependencies": [
         "D"
       ],
-      "start": 22,
-      "end": 27
+      "start": 24,
+      "end": 29
     },
     {
       "id": "H",
@@ -172,8 +172,8 @@
       "dependencies": [
         "G"
       ],
-      "start": 24,
-      "end": 27
+      "start": 27,
+      "end": 30
     },
     {
       "id": "M",
@@ -192,14 +192,14 @@
       "dependencies": [
         "J"
       ],
-      "start": 29,
-      "end": 33
+      "start": 32,
+      "end": 36
     },
     {
       "id": "I",
       "activity": "Transfer_funds_securely",
-      "optimistic_duration": 5,
-      "likely_duration": 1,
+      "optimistic_duration": 1,
+      "likely_duration": 2,
       "pessimistic_duration": 3,
       "expected_duration": 2,
       "people_required": 1,
@@ -213,8 +213,8 @@
         "B",
         "H"
       ],
-      "start": 29,
-      "end": 31
+      "start": 33,
+      "end": 35
     },
     {
       "id": "K",
@@ -235,8 +235,8 @@
         "I",
         "J"
       ],
-      "start": 34,
-      "end": 37
+      "start": 38,
+      "end": 41
     },
     {
       "id": "L",
@@ -256,8 +256,8 @@
         "K",
         "M"
       ],
-      "start": 39,
-      "end": 41
+      "start": 44,
+      "end": 46
     },
     {
       "id": "C",
@@ -276,8 +276,8 @@
       "dependencies": [
         "B"
       ],
-      "start": 44,
-      "end": 49
+      "start": 49,
+      "end": 54
     },
     {
       "id": "N",
@@ -297,16 +297,16 @@
         "C",
         "L"
       ],
-      "start": 52,
-      "end": 67
+      "start": 58,
+      "end": 73
     },
     {
       "id": "O",
       "activity": "Break_open_container_and_remove_drugs",
-      "optimistic_duration": 5,
-      "likely_duration": 1,
-      "pessimistic_duration": 2,
-      "expected_duration": 1.8333333333333333,
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
       "people_required": 3,
       "monetary_cost_per_day": 250,
       "level_of_revealingness": 6,
@@ -317,8 +317,8 @@
       "dependencies": [
         "N"
       ],
-      "start": 71,
-      "end": 73
+      "start": 78,
+      "end": 80
     },
     {
       "id": "Q",
@@ -338,8 +338,8 @@
         "O",
         "P"
       ],
-      "start": 77,
-      "end": 79
+      "start": 85,
+      "end": 87
     },
     {
       "id": "R",
@@ -358,8 +358,8 @@
       "dependencies": [
         "Q"
       ],
-      "start": 82,
-      "end": 85
+      "start": 90,
+      "end": 93
     },
     {
       "id": "S",
@@ -378,8 +378,8 @@
       "dependencies": [
         "Q"
       ],
-      "start": 87,
-      "end": 93
+      "start": 95,
+      "end": 101
     }
   ]
 }
