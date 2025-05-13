@@ -3,7 +3,7 @@ import { Graph, Edge } from "graphlib";
 import { lastValueFrom } from "rxjs";
 import * as fs from "fs"; // Node.js file system for saving the JSON output
 
-const jsonOutputPath = "C:/Users/cobev/OneDrive - UGent/2024_2025_Informatica/sem2/project_management/planning-application/project-management/Website/data/v2/schedules/rcp_6_people.json"
+const jsonOutputPath = "./Website/data/v2/schedules/rcp_6_people.json" // CHANGE this to your desired output path
 const totalPeople = 6; // CHANGE this to simulate constraints
 
 interface Activity {

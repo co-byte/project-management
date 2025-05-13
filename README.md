@@ -49,6 +49,6 @@ This will process all configurations and save the results in the appropriate dir
 
 For analyzing the results of the simulations, a Jupyter Notebook is available at:
 
-`./Website/app/data_analysis.ipynb`
+`./Website/data_analysis.ipynb`
 
 This notebook provides utilities for processing simulation data, generating visualizations, and summarizing key metrics. Open the notebook in Jupyter or any compatible environment to explore the results.
