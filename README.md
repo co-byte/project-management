@@ -1,21 +1,50 @@
 # project-management
 
-Navigate to `/planning-application/project-management`.
+> **Disclaimer**: This project was developed solely as a Proof of Concept (PoC), corporate talk for a codebase with duplicate files and less-than-optimal organization.
 
-## Executing the planning scripts
+This project provides tools for project scheduling and simulation using PERT and KART methodologies.
 
-To plan the project using PERT and KART, execute:
+## Viewing the Gantt Charts
+
+To visualize the generated schedules as Gantt charts:
+
+1. Navigate to the `project-management/` directory
+2. Start a local HTTP server in the `Website` directory:
+
+    ```bash
+    http-server ./Website -p 8000 --spa
+    ```
+
+3. Open your browser and navigate to `http://localhost:8000`.
+
+The Gantt charts will display the schedules located in `./Website/data/v2/schedules/`.
+
+> **Note**: Since the Gantt charts are served as static files, any changes to the schedules will require a browser refresh to reflect the updates.
+
+## Running the Planning Scripts
+
+To generate project schedules using PERT and KART:
+
+1. Navigate to the root directory of the project (`project-management/`).
+2. Run the following commands:
 
 ```bash
-npx ts-node .\Website\app\PERT_GANTT_scheduler.ts
-npx ts-node .\Website\app\KART_scheduler\main.ts
+npx ts-node ./Website/app/PERT_GANTT_scheduler.ts    # PERT-based scheduling
+npx ts-node ./Website/app/KART_scheduler/main.ts     # KART-based scheduling
 ```
 
-## Displaying the Gantt charts
+These scripts process the input data located at `./Website/data/input.csv` and generate schedules in the `./Website/data/v2/schedules/` directory.
 
-Run `http-server ./Website -p 8000 --spa` and navigate to `localhost:8000` to view the resulting Gant charts.
+## Running the simulation
 
-## Explanation of the algorithm
+To manually run the simulation, execute: `node .\Website\app\Schedule_runner.js`
 
-- Parallel Schedule Generation Scheme
-- Earliest start time (Critical path based) while trying to minimize the concurrent "revealingness" levels at any given time.
+## Using the script to schedule & simulate
+
+The script located at `./Website/app/KART_scheduler/analysis/kart_run.ts` automates the scheduling and simulation process for multiple configurations. It reads predefined configurations, generates schedules, and runs simulations. To execute the script, run:
+
+```bash
+npx ts-node ./Website/app/KART_scheduler/analysis/kart_run.ts
+```
+
+This will process all configurations and save the results in the appropriate directories under `./Website/data/v2/results/`.

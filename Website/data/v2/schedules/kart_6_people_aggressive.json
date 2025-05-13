@@ -1,8 +1,8 @@
 {
-  "totalCost": 34400,
+  "totalCost": 39600,
   "schedule": [
     {
-      "id": "ACT_2.1.1",
+      "id": "F",
       "activity": "Identify_potential_producers",
       "optimistic_duration": 2,
       "likely_duration": 4,
@@ -20,7 +20,7 @@
       "end": 5
     },
     {
-      "id": "ACT_1.1.1",
+      "id": "A",
       "activity": "Choose_a_fake_business_identity",
       "optimistic_duration": 1,
       "likely_duration": 2,
@@ -38,7 +38,7 @@
       "end": 3
     },
     {
-      "id": "ACT_4.1.1",
+      "id": "P",
       "activity": "Map_route_with_minimal_ANPR_coverage",
       "optimistic_duration": 2,
       "likely_duration": 3,
@@ -56,7 +56,7 @@
       "end": 4
     },
     {
-      "id": "ACT_2.1.2",
+      "id": "G",
       "activity": "Evaluate_quality_and_reliability",
       "optimistic_duration": 2,
       "likely_duration": 3,
@@ -70,13 +70,13 @@
       "chance_of_losing_people": 1,
       "weight_of_losing_people": 2,
       "dependencies": [
-        "ACT_2.1.1"
+        "F"
       ],
       "start": 6,
       "end": 10
     },
     {
-      "id": "ACT_1.1.2",
+      "id": "B",
       "activity": "Set_up_offshore_accounts",
       "optimistic_duration": 3,
       "likely_duration": 5,
@@ -90,13 +90,13 @@
       "chance_of_losing_people": 1,
       "weight_of_losing_people": 2,
       "dependencies": [
-        "ACT_1.1.1"
+        "A"
       ],
       "start": 6,
       "end": 12
     },
     {
-      "id": "ACT_2.1.3",
+      "id": "H",
       "activity": "Negotiate_and_close_deal",
       "optimistic_duration": 1,
       "likely_duration": 2,
@@ -110,13 +110,13 @@
       "chance_of_losing_people": 5,
       "weight_of_losing_people": 1,
       "dependencies": [
-        "ACT_2.1.2"
+        "G"
       ],
       "start": 11,
       "end": 14
     },
     {
-      "id": "ACT_1.2.2",
+      "id": "D",
       "activity": "Rent_warehouse_and_vehicles",
       "optimistic_duration": 2,
       "likely_duration": 3,
@@ -130,13 +130,13 @@
       "chance_of_losing_people": 1,
       "weight_of_losing_people": 2,
       "dependencies": [
-        "ACT_1.1.2"
+        "B"
       ],
       "start": 12,
       "end": 15
     },
     {
-      "id": "ACT_1.2.3",
+      "id": "E",
       "activity": "Forge_transport_documents",
       "optimistic_duration": 2,
       "likely_duration": 3,
@@ -150,16 +150,16 @@
       "chance_of_losing_people": 5,
       "weight_of_losing_people": 1,
       "dependencies": [
-        "ACT_1.1.2"
+        "B"
       ],
       "start": 13,
       "end": 17
     },
     {
-      "id": "ACT_2.2.1",
+      "id": "I",
       "activity": "Transfer_funds_securely",
-      "optimistic_duration": 5,
-      "likely_duration": 1,
+      "optimistic_duration": 1,
+      "likely_duration": 2,
       "pessimistic_duration": 3,
       "expected_duration": 2,
       "people_required": 1,
@@ -170,14 +170,14 @@
       "chance_of_losing_people": 5,
       "weight_of_losing_people": 5,
       "dependencies": [
-        "ACT_1.1.2",
-        "ACT_2.1.3"
+        "B",
+        "H"
       ],
       "start": 15,
       "end": 17
     },
     {
-      "id": "ACT_2.3.1",
+      "id": "J",
       "activity": "Acquire_freight_container_and_legit_cargo",
       "optimistic_duration": 2,
       "likely_duration": 4,
@@ -191,13 +191,13 @@
       "chance_of_losing_people": 1,
       "weight_of_losing_people": 2,
       "dependencies": [
-        "ACT_1.2.2"
+        "D"
       ],
       "start": 16,
       "end": 21
     },
     {
-      "id": "ACT_1.2.1",
+      "id": "C",
       "activity": "Recruit_insiders_at_ports_(Santos_and_Antwerp)",
       "optimistic_duration": 2,
       "likely_duration": 4,
@@ -208,16 +208,16 @@
       "level_of_revealingness": 5,
       "chance_of_delays": 3,
       "weight_of_delays": 4,
-      "chance_of_losing_people": 15,
+      "chance_of_losing_people": 5,
       "weight_of_losing_people": 25,
       "dependencies": [
-        "ACT_1.1.2"
+        "B"
       ],
       "start": 18,
       "end": 23
     },
     {
-      "id": "ACT_2.3.2",
+      "id": "K",
       "activity": "Hide_drugs_in_container",
       "optimistic_duration": 1,
       "likely_duration": 2,
@@ -231,15 +231,15 @@
       "chance_of_losing_people": 1,
       "weight_of_losing_people": 2,
       "dependencies": [
-        "ACT_1.2.3",
-        "ACT_2.2.1",
-        "ACT_2.3.1"
+        "E",
+        "I",
+        "J"
       ],
       "start": 24,
       "end": 27
     },
     {
-      "id": "ACT_3.1.1",
+      "id": "M",
       "activity": "Set_up_GPS/satellite_tracking",
       "optimistic_duration": 2,
       "likely_duration": 3,
@@ -253,13 +253,13 @@
       "chance_of_losing_people": 5,
       "weight_of_losing_people": 1,
       "dependencies": [
-        "ACT_2.3.1"
+        "J"
       ],
       "start": 24,
       "end": 28
     },
     {
-      "id": "ACT_2.3.3",
+      "id": "L",
       "activity": "Transport_container_with_truck_to_port_S-Am",
       "optimistic_duration": 1,
       "likely_duration": 2,
@@ -273,40 +273,40 @@
       "chance_of_losing_people": 5,
       "weight_of_losing_people": 1,
       "dependencies": [
-        "ACT_2.3.2",
-        "ACT_3.1.1"
+        "K",
+        "M"
       ],
       "start": 28,
       "end": 30
     },
     {
-      "id": "ACT_3.1.2",
+      "id": "N",
       "activity": "Sea_transport+tracking",
       "optimistic_duration": 10,
       "likely_duration": 14,
       "pessimistic_duration": 21,
       "expected_duration": 14.5,
-      "people_required": 1,
+      "people_required": 3,
       "monetary_cost_per_day": 500,
       "level_of_revealingness": 3,
       "chance_of_delays": 3,
       "weight_of_delays": 4,
-      "chance_of_losing_people": 15,
+      "chance_of_losing_people": 5,
       "weight_of_losing_people": 25,
       "dependencies": [
-        "ACT_2.3.3",
-        "ACT_1.2.1"
+        "C",
+        "L"
       ],
       "start": 30,
       "end": 45
     },
     {
-      "id": "ACT_3.2.1",
+      "id": "O",
       "activity": "Break_open_container_and_remove_drugs",
-      "optimistic_duration": 5,
-      "likely_duration": 1,
-      "pessimistic_duration": 2,
-      "expected_duration": 1.8333333333333333,
+      "optimistic_duration": 1,
+      "likely_duration": 2,
+      "pessimistic_duration": 3,
+      "expected_duration": 2,
       "people_required": 3,
       "monetary_cost_per_day": 250,
       "level_of_revealingness": 6,
@@ -315,13 +315,13 @@
       "chance_of_losing_people": 1,
       "weight_of_losing_people": 2,
       "dependencies": [
-        "ACT_3.1.2"
+        "N"
       ],
       "start": 45,
       "end": 47
     },
     {
-      "id": "ACT_4.1.2",
+      "id": "Q",
       "activity": "Transport_and_delivery_to_client_(Garage_club)",
       "optimistic_duration": 1,
       "likely_duration": 2,
@@ -335,14 +335,14 @@
       "chance_of_losing_people": 5,
       "weight_of_losing_people": 1,
       "dependencies": [
-        "ACT_3.2.1",
-        "ACT_4.1.1"
+        "O",
+        "P"
       ],
       "start": 48,
       "end": 50
     },
     {
-      "id": "ACT_4.2.1",
+      "id": "R",
       "activity": "Disband_fake_company_+_cut_off_loose_ends",
       "optimistic_duration": 1,
       "likely_duration": 2,
@@ -353,16 +353,16 @@
       "level_of_revealingness": 3,
       "chance_of_delays": 3,
       "weight_of_delays": 4,
-      "chance_of_losing_people": 15,
+      "chance_of_losing_people": 5,
       "weight_of_losing_people": 25,
       "dependencies": [
-        "ACT_4.1.2"
+        "Q"
       ],
       "start": 51,
       "end": 54
     },
     {
-      "id": "ACT_4.2.2",
+      "id": "S",
       "activity": "Money_laundering",
       "optimistic_duration": 3,
       "likely_duration": 5,
@@ -376,7 +376,7 @@
       "chance_of_losing_people": 1,
       "weight_of_losing_people": 2,
       "dependencies": [
-        "ACT_4.1.2"
+        "Q"
       ],
       "start": 51,
       "end": 57

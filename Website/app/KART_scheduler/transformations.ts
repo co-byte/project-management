@@ -142,13 +142,7 @@ function constructPriorityQueue(
   // +++ Step 5: Provide debugging information and return the sortedActivitiesQueue +++
   // Debugging output
   // console.debug("\nconstructPriorityQueue - Sorted graph nodes:");
-  // sortedActivitiesQueue.toArray().forEach((activity: Activity) => {
-  //   console.debug(
-  //     ` - Activity: '${activity.activity.trim()}', Revealingness: ${
-  //       activity.level_of_revealingness
-  //     }`
-  //   );
-  // });
+  // console.debug(sortedActivitiesQueue.toArray().map((activity) => activity.activity.trim() + " (" + activity.id + ")"));
 
   return sortedActivitiesQueue;
 }
@@ -165,7 +159,7 @@ export function scheduleActivities(
   hardMaximumOfRevealingsness: number,
   revealingnessDecayRate: number,
   startTimeSlot: number,
-  startRevealingness: number,
+  startRevealingness: number
 ): { schedule: ScheduledActivity[]; totalCost: number } {
   const schedule: ScheduledActivity[] = [];
 
@@ -265,13 +259,13 @@ export function scheduleActivities(
         softMaximumOfRevealingness);
 
     // Update weightOfResources based on the remaining project duration
-    weightOfResources -= initialResourceWeight / expectedProjectDuration;
+    // weightOfResources -= initialResourceWeight / expectedProjectDuration;
 
     // Update the current time slot
     currentTimeSlot += 1;
   }
 
-  totalCost += (currentTimeSlot-startTimeSlot) * dailyProjectCost
+  totalCost += (currentTimeSlot - startTimeSlot) * dailyProjectCost;
 
   // Calculate the total cost based on the number of time slots used
   return {
