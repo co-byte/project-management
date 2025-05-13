@@ -8,14 +8,13 @@ This project provides tools for project scheduling and simulation using PERT and
 
 To visualize the generated schedules as Gantt charts:
 
-1. Navigate to the `project-management/` directory
-2. Start a local HTTP server in the `Website` directory:
+1. Start a local HTTP server in the `Website` directory:
 
     ```bash
     http-server ./Website -p 8000 --spa
     ```
 
-3. Open your browser and navigate to `http://localhost:8000`.
+2. Open your browser and navigate to `http://localhost:8000`.
 
 The Gantt charts will display the schedules located in `./Website/data/v2/schedules/`.
 
@@ -23,10 +22,7 @@ The Gantt charts will display the schedules located in `./Website/data/v2/schedu
 
 ## Running the Planning Scripts
 
-To generate project schedules using PERT and KART:
-
-1. Navigate to the root directory of the project (`project-management/`).
-2. Run the following commands:
+To generate project schedules using PERT and KART, run the following commands:
 
 ```bash
 npx ts-node ./Website/app/PERT_GANTT_scheduler.ts    # PERT-based scheduling
@@ -48,3 +44,11 @@ npx ts-node ./Website/app/KART_scheduler/analysis/kart_run.ts
 ```
 
 This will process all configurations and save the results in the appropriate directories under `./Website/data/v2/results/`.
+
+## Data Analysis
+
+For analyzing the results of the simulations, a Jupyter Notebook is available at:
+
+`./Website/app/data_analysis.ipynb`
+
+This notebook provides utilities for processing simulation data, generating visualizations, and summarizing key metrics. Open the notebook in Jupyter or any compatible environment to explore the results.
